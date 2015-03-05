@@ -5,7 +5,7 @@
 #ifdef __AVR__
 #include <util/delay.h>
 #include <light_ws2812.h>
-#define   usleep(x)  _delay_ms(x / 1000)
+#define   usleep(x)  _delay_ms(200)
 #elif _WIN32
 #include <conio.h>
 #include <windows.h>
@@ -159,12 +159,13 @@ output ()
 uint8_t
 getkey ()
 {
-  uint8_t buf[128];
-  uint8_t len;
   uint8_t ch = ' ';
 
 #ifdef __AVR__
 #else
+  uint8_t buf[128];
+  uint8_t len;
+
 #ifdef _WIN32
   if (kbhit ())
 #else
