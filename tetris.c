@@ -6,6 +6,8 @@
 #include <windows.h>
 #define usleep(x) Sleep(x / 1000)
 #elif __AVR__
+#include <avr/io.h>
+#include <light_ws2812.h>
 #else
 #include <string.h>
 #include <termios.h>
@@ -14,8 +16,8 @@
 #endif
 
 #include "tetris.h"
-unsigned long board[TETRIS_BOARD_WIDTH][TETRIS_BOARD_HEIGHT];
-unsigned long brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
+uint8_t board[TETRIS_BOARD_WIDTH][TETRIS_BOARD_HEIGHT];
+uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 unsigned int tick = 200;
 
 char
@@ -61,7 +63,7 @@ rotate (char clockwise)
 {
   unsigned short x;
   unsigned short y;
-  unsigned long tmp[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
+  uint8_t tmp[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 
   for (x = 0; x < TETRIS_BRICK_SIZE; x++)
     for (y = 0; y < TETRIS_BRICK_SIZE; y++)
@@ -101,25 +103,6 @@ insert (signed short offset_x, signed short offset_y, char reverse)
 }
 
 void
-output ()
-{
-  unsigned short x;
-  unsigned short y;
-
-  for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
-    {
-      printf ("| ");
-      for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
-	{
-	  printf ("%c ", board[x][y]);
-	}
-      printf ("|\n");
-    }
-
-  printf (">---------------------<\n");
-}
-
-void
 initOutput ()
 {
 #ifdef _WIN32
@@ -130,12 +113,43 @@ initOutput ()
   hstdin = GetStdHandle (STD_INPUT_HANDLE);
   GetConsoleMode (hstdin, &mode);
   SetConsoleMode (hstdin, 0);
+#elif __AVR__
+  CLKPR = _BV (CLKPCE);
+  CLKPR = 0;
 #else
   struct termios mode;
 
   tcgetattr (STDIN_FILENO, &mode);
   mode.c_lflag &= ~(ICANON | ECHO);
   tcsetattr (STDIN_FILENO, TCSANOW, &mode);
+#endif
+}
+
+void
+output ()
+{
+  unsigned short x;
+  unsigned short y;
+
+#ifdef __AVR__
+  uint8_t tmp[TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT * 3];
+
+  memset (tmp, 0, sizeof (tmp));
+  for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
+    for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
+      tmp[x][y * 3] = TETRIS_COLORS[board[x][y] - 1];
+  ws2812_setleds (tmp, TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT);
+#else
+  for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
+    {
+      printf ("| ");
+      for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
+	{
+	  printf ("%c ", TETRIS_COLORS[board[x][y] - 1]);
+	}
+      printf ("|\n");
+    }
+  printf (">---------------------<\n");
 #endif
 }
 
@@ -176,7 +190,7 @@ main (void)
   signed short offset_x;
   signed short offset_y;
   unsigned char rand_brick;
-  unsigned char rand_output;
+  unsigned char rand_color;
   unsigned char key;
 
   memset (board, TETRIS_BIT_EMPTY, sizeof (board));
@@ -188,13 +202,13 @@ main (void)
       offset_y = -TETRIS_BRICK_SIZE + 1;
 
       /* new brick */
-      rand_brick = rand () % (sizeof (TETRIS_BIT_OUTPUT) / sizeof (long));
-      rand_output = rand () % (sizeof (TETRIS_BIT_OUTPUT) / sizeof (long));
+      rand_brick = rand () % (sizeof (TETRIS_BRICKS) / sizeof (TETRIS_BRICKS[0]));
+      rand_color = 1 + rand () % (sizeof (TETRIS_COLORS) / sizeof (uint8_t));
       memset (brick, 0, sizeof (brick));
       for (x = 0; x < TETRIS_BRICK_SIZE; x++)
 	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
 	  if (TETRIS_BRICKS[rand_brick][x][y])
-	    brick[x][y] = TETRIS_BIT_OUTPUT[rand_output];
+	    brick[x][y] = rand_color;
 
       /* game over */
       if (!canBeAt (offset_x, offset_y))
