@@ -18,13 +18,13 @@
 #include "tetris.h"
 uint8_t board[TETRIS_BOARD_WIDTH][TETRIS_BOARD_HEIGHT];
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
-unsigned int tick = 200;
+uint16_t tick = 200;
 
-char
-canBeAt (signed short offset_x, signed short offset_y)
+uint8_t
+canBeAt (int16_t offset_x, int16_t offset_y)
 {
-  unsigned short x;
-  unsigned short y;
+  uint16_t x;
+  uint16_t y;
 
   /* horizontal borders */
   for (y = 0; y < TETRIS_BRICK_SIZE; y++)
@@ -59,10 +59,10 @@ canBeAt (signed short offset_x, signed short offset_y)
 }
 
 void
-rotate (char clockwise)
+rotate (uint8_t clockwise)
 {
-  unsigned short x;
-  unsigned short y;
+  uint16_t x;
+  uint16_t y;
   uint8_t tmp[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 
   for (x = 0; x < TETRIS_BRICK_SIZE; x++)
@@ -79,10 +79,10 @@ rotate (char clockwise)
 }
 
 void
-insert (signed short offset_x, signed short offset_y, char reverse)
+insert (int16_t offset_x, int16_t offset_y, uint8_t reverse)
 {
-  unsigned short x;
-  unsigned short y;
+  uint16_t x;
+  uint16_t y;
 
   for (x = 0; x < TETRIS_BRICK_SIZE; x++)
     {
@@ -128,8 +128,8 @@ initOutput ()
 void
 output ()
 {
-  unsigned short x;
-  unsigned short y;
+  uint16_t x;
+  uint16_t y;
 
 #ifdef __AVR__
   uint8_t tmp[TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT * 3];
@@ -153,12 +153,12 @@ output ()
 #endif
 }
 
-int
+uint8_t
 getkey ()
 {
-  unsigned char buf[128];
-  unsigned char len;
-  unsigned char ch = ' ';
+  uint8_t buf[128];
+  uint8_t len;
+  uint8_t ch = ' ';
 
 #ifdef _WIN32
   if (kbhit ())
@@ -185,13 +185,13 @@ getkey ()
 int
 main (void)
 {
-  unsigned short x;
-  unsigned short y;
-  signed short offset_x;
-  signed short offset_y;
-  unsigned char rand_brick;
-  unsigned char rand_color;
-  unsigned char key;
+  uint16_t x;
+  uint16_t y;
+  int16_t offset_x;
+  int16_t offset_y;
+  uint8_t rand_brick;
+  uint8_t rand_color;
+  uint8_t key;
 
   memset (board, TETRIS_BIT_EMPTY, sizeof (board));
   initOutput ();
@@ -202,8 +202,10 @@ main (void)
       offset_y = -TETRIS_BRICK_SIZE + 1;
 
       /* new brick */
-      rand_brick = rand () % (sizeof (TETRIS_BRICKS) / sizeof (TETRIS_BRICKS[0]));
-      rand_color = 1 + rand () % (sizeof (TETRIS_COLORS) / sizeof (uint8_t));
+      rand_brick =
+	rand () % (sizeof (TETRIS_BRICKS) / sizeof (TETRIS_BRICKS[0]));
+      rand_color =
+	1 + rand () % (sizeof (TETRIS_COLORS) / sizeof (TETRIS_COLORS[0]));
       memset (brick, 0, sizeof (brick));
       for (x = 0; x < TETRIS_BRICK_SIZE; x++)
 	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
