@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-#ifdef _WIN32
+#ifdef __AVR__
+#include <light_ws2812.h>
+#elif _WIN32
 #include <conio.h>
 #include <windows.h>
 #define usleep(x) Sleep(x / 1000)
-#elif __AVR__
-#include <avr/io.h>
-#include <light_ws2812.h>
 #else
-#include <string.h>
 #include <termios.h>
 #include <sys/time.h>
 #include <unistd.h>
 #endif
 
 #include "tetris.h"
+
 uint8_t board[TETRIS_BOARD_WIDTH][TETRIS_BOARD_HEIGHT];
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 uint16_t tick = 200;
@@ -49,8 +49,8 @@ canBeAt (int16_t offset_x, int16_t offset_y)
 	  if (offset_y + y < 0)
 	    continue;
 
-	  else if (board[offset_x + x][offset_y + y] !=
-		   TETRIS_BIT_EMPTY && brick[x][y])
+	  else if (board[offset_x + x][offset_y + y] != TETRIS_BIT_EMPTY
+		   && brick[x][y])
 	    return 0;
 	}
     }
@@ -74,7 +74,6 @@ rotate (uint8_t clockwise)
 	else
 	  tmp[y][TETRIS_BRICK_SIZE - x - 1] = brick[x][y];
       }
-
   memcpy (brick, tmp, sizeof (brick));
 }
 
@@ -83,12 +82,13 @@ insert (int16_t offset_x, int16_t offset_y, uint8_t reverse)
 {
   uint16_t x;
   uint16_t y;
-
   for (x = 0; x < TETRIS_BRICK_SIZE; x++)
+
     {
       if (offset_x + x < 0)
 	continue;
       for (y = 0; y < TETRIS_BRICK_SIZE; y++)
+
 	{
 	  if (offset_y + y < 0)
 	    continue;
@@ -105,20 +105,16 @@ insert (int16_t offset_x, int16_t offset_y, uint8_t reverse)
 void
 initOutput ()
 {
-#ifdef _WIN32
+#ifdef __AVR__
+#elif _WIN32
   DWORD mode;
   HANDLE hstdin;
   DWORD res;
-
   hstdin = GetStdHandle (STD_INPUT_HANDLE);
   GetConsoleMode (hstdin, &mode);
   SetConsoleMode (hstdin, 0);
-#elif __AVR__
-  CLKPR = _BV (CLKPCE);
-  CLKPR = 0;
 #else
   struct termios mode;
-
   tcgetattr (STDIN_FILENO, &mode);
   mode.c_lflag &= ~(ICANON | ECHO);
   tcsetattr (STDIN_FILENO, TCSANOW, &mode);
@@ -132,13 +128,17 @@ output ()
   uint16_t y;
 
 #ifdef __AVR__
-  uint8_t tmp[TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT * 3];
+  struct cRGB leds[TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT];
 
-  memset (tmp, 0, sizeof (tmp));
   for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
     for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
-      tmp[x][y * 3] = TETRIS_COLORS[board[x][y] - 1];
-  ws2812_setleds (tmp, TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT);
+      {
+	leds[x * TETRIS_BOARD_WIDTH + y].r = 0x0;
+	leds[x * TETRIS_BOARD_WIDTH + y].g = 0x0;
+	leds[x * TETRIS_BOARD_WIDTH + y].b = 0x0;
+      }
+
+  ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
 #else
   for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
     {
@@ -149,6 +149,7 @@ output ()
 	}
       printf ("|\n");
     }
+
   printf (">---------------------<\n");
 #endif
 }
@@ -160,17 +161,17 @@ getkey ()
   uint8_t len;
   uint8_t ch = ' ';
 
+#ifdef __AVR__
+#else
 #ifdef _WIN32
   if (kbhit ())
 #else
   struct timeval tv;
   fd_set fds;
-
   tv.tv_sec = 0;
   tv.tv_usec = 0;
   FD_ZERO (&fds);
   FD_SET (STDIN_FILENO, &fds);
-
   select (STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
   if (FD_ISSET (STDIN_FILENO, &fds))
 #endif
@@ -178,6 +179,7 @@ getkey ()
       len = read (STDIN_FILENO, buf, sizeof (buf) - 1);
       ch = buf[len - 1];
     }
+#endif
 
   return ch;
 }
@@ -216,9 +218,8 @@ main (void)
       if (!canBeAt (offset_x, offset_y))
 	{
 	  printf (" !!! GAME OVER !!!  ");
-	  return EXIT_FAILURE;
+	  return 0;
 	}
-
       for (; offset_y <= TETRIS_BOARD_HEIGHT; offset_y++)
 	{
 	  insert (offset_x, offset_y - 1, 1);
@@ -248,12 +249,11 @@ main (void)
 	      insert (offset_x, offset_y - 1, 0);
 	      break;
 	    }
-
 	  insert (offset_x, offset_y, 0);
 	  output ();
 	  usleep (tick * 1000);
 	}
     }
 
-  return EXIT_SUCCESS;
+  return 0;
 }
