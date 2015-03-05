@@ -3,7 +3,9 @@
 #include <string.h>
 
 #ifdef __AVR__
+#include <util/delay.h>
 #include <light_ws2812.h>
+#define   usleep(x)  _delay_ms(x / 1000)
 #elif _WIN32
 #include <conio.h>
 #include <windows.h>
