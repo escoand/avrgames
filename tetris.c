@@ -1,260 +1,217 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#ifdef __AVR__
-#include <util/delay.h>
-#include <light_ws2812.h>
-#define   usleep(x)  _delay_ms(200)
-#elif _WIN32
-#include <conio.h>
-#include <windows.h>
-#define usleep(x) Sleep(x / 1000)
-#else
-#include <termios.h>
-#include <sys/time.h>
-#include <unistd.h>
-#endif
-
+#include "main.h"
+#include "output.h"
 #include "tetris.h"
 
-uint8_t board[TETRIS_BOARD_WIDTH][TETRIS_BOARD_HEIGHT];
+#define TETRIS_BRICK_SIZE   4
+
+uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
+  {
+   {0, 0, 0, 0}
+   ,
+   {0, 0, 0, 0}
+   ,
+   {1, 1, 1, 1}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {1, 0, 0, 0}
+   ,
+   {1, 1, 1, 0}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {0, 0, 1, 0}
+   ,
+   {1, 1, 1, 0}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {0, 1, 1, 0}
+   ,
+   {0, 1, 1, 0}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {0, 1, 1, 0}
+   ,
+   {1, 1, 0, 0}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {1, 1, 0, 0}
+   ,
+   {0, 1, 1, 0}
+   ,
+   {0, 0, 0, 0}
+   }
+  ,
+  {
+   {0, 0, 0, 0}
+   ,
+   {0, 0, 1, 0}
+   ,
+   {0, 1, 1, 1}
+   ,
+   {0, 0, 0, 0}
+   }
+};
+
+enum actions
+{ INSERT, REVERSE, ROTATE_LEFT, ROTATE_RIGHT };
+
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
-uint16_t tick = 200;
+int16_t offset_x = INT16_MAX;
+int16_t offset_y = INT16_MAX;
 
 uint8_t
-canBeAt (int16_t offset_x, int16_t offset_y)
-{
-  uint16_t x;
-  uint16_t y;
-
-  /* horizontal borders */
-  for (y = 0; y < TETRIS_BRICK_SIZE; y++)
-    if (offset_x < 0 && brick[-1 - offset_x][y]
-	|| offset_x > TETRIS_BOARD_WIDTH - TETRIS_BRICK_SIZE + 1
-	&& brick[TETRIS_BOARD_WIDTH - offset_x][y])
-      return 0;
-
-  /* vertical borders */
-  for (x = 0; x < TETRIS_BRICK_SIZE; x++)
-    if (offset_y > TETRIS_BOARD_HEIGHT - TETRIS_BRICK_SIZE
-	&& brick[x][TETRIS_BOARD_HEIGHT - offset_y])
-      return 0;
-
-  /* former bricks */
-  for (x = 0; x < TETRIS_BRICK_SIZE; x++)
-    {
-      if (offset_x + x < 0 || offset_x + x >= TETRIS_BOARD_WIDTH)
-	continue;
-      for (y = 0; y < TETRIS_BRICK_SIZE; y++)
-	{
-	  if (offset_y + y < 0)
-	    continue;
-
-	  else if (board[offset_x + x][offset_y + y] != TETRIS_BIT_EMPTY
-		   && brick[x][y])
-	    return 0;
-	}
-    }
-
-  return 1;
-}
-
-void
-rotate (uint8_t clockwise)
+insertBrick (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], int16_t _offset_x,
+	     int16_t _offset_y, enum actions action)
 {
   uint16_t x;
   uint16_t y;
   uint8_t tmp[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 
-  for (x = 0; x < TETRIS_BRICK_SIZE; x++)
-    for (y = 0; y < TETRIS_BRICK_SIZE; y++)
-      {
-	if (clockwise)
-	  tmp[TETRIS_BRICK_SIZE - y - 1][x] = brick[x][y];
-
-	else
-	  tmp[y][TETRIS_BRICK_SIZE - x - 1] = brick[x][y];
-      }
-  memcpy (brick, tmp, sizeof (brick));
-}
-
-void
-insert (int16_t offset_x, int16_t offset_y, uint8_t reverse)
-{
-  uint16_t x;
-  uint16_t y;
-  for (x = 0; x < TETRIS_BRICK_SIZE; x++)
-
+  /* action */
+  if (action == ROTATE_LEFT || action == ROTATE_RIGHT)
     {
-      if (offset_x + x < 0)
-	continue;
-      for (y = 0; y < TETRIS_BRICK_SIZE; y++)
+      for (x = 0; x < TETRIS_BRICK_SIZE; x++)
+	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
+	  {
+	    if (action == ROTATE_LEFT)
+	      tmp[TETRIS_BRICK_SIZE - y - 1][x] = brick[x][y];
 
+	    else if (action == ROTATE_RIGHT)
+	      tmp[y][TETRIS_BRICK_SIZE - x - 1] = brick[x][y];
+	  }
+    }
+  else
+    memcpy (tmp, brick, sizeof (brick));
+
+  /* check */
+  if (action != REVERSE)
+    for (x = 0; x < TETRIS_BRICK_SIZE; x++)
+      {
+	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
+	  {
+	    if (_offset_y + y < 0)
+	      continue;
+
+	    else if (tmp[x][y]
+		     && (board[_offset_x + x][_offset_y + y]
+			 || _offset_x + x < 0
+			 || _offset_x + x >= BOARD_WIDTH))
+	      return 0;
+	  }
+      }
+
+  for (x = 0; x < TETRIS_BRICK_SIZE; x++)
+    {
+      for (y = 0; y < TETRIS_BRICK_SIZE; y++)
 	{
-	  if (offset_y + y < 0)
+	  if (_offset_y + y < 0)
 	    continue;
 
-	  else if (reverse && brick[x][y])
-	    board[offset_x + x][offset_y + y] = TETRIS_BIT_EMPTY;
+	  /* reverse */
+	  else if (action == REVERSE && brick[x][y])
+	    board[_offset_x + x][_offset_y + y] = 0;
 
-	  else if (!reverse && brick[x][y])
-	    board[offset_x + x][offset_y + y] = brick[x][y];
+	  /* insert */
+	  else if (action != REVERSE && tmp[x][y])
+	    board[_offset_x + x][_offset_y + y] = tmp[x][y];
 	}
     }
-}
 
-void
-initOutput ()
-{
-#ifdef __AVR__
-#elif _WIN32
-  DWORD mode;
-  HANDLE hstdin;
-  DWORD res;
-  hstdin = GetStdHandle (STD_INPUT_HANDLE);
-  GetConsoleMode (hstdin, &mode);
-  SetConsoleMode (hstdin, 0);
-#else
-  struct termios mode;
-  tcgetattr (STDIN_FILENO, &mode);
-  mode.c_lflag &= ~(ICANON | ECHO);
-  tcsetattr (STDIN_FILENO, TCSANOW, &mode);
-#endif
-}
-
-void
-output ()
-{
-  uint16_t x;
-  uint16_t y;
-
-#ifdef __AVR__
-  struct cRGB leds[TETRIS_BOARD_WIDTH * TETRIS_BOARD_HEIGHT];
-
-  for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
-    for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
-      {
-	leds[x * TETRIS_BOARD_WIDTH + y].r = 0x0;
-	leds[x * TETRIS_BOARD_WIDTH + y].g = 0x0;
-	leds[x * TETRIS_BOARD_WIDTH + y].b = 0x0;
-      }
-
-  ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
-#else
-  for (y = 0; y < TETRIS_BOARD_HEIGHT; y++)
-    {
-      printf ("| ");
-      for (x = 0; x < TETRIS_BOARD_WIDTH; x++)
-	{
-	  printf ("%c ", TETRIS_COLORS[board[x][y] - 1]);
-	}
-      printf ("|\n");
-    }
-
-  printf (">---------------------<\n");
-#endif
+  memcpy (brick, tmp, sizeof (brick));
+  return 1;
 }
 
 uint8_t
-getkey ()
+nextStep (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], uint8_t key)
 {
-  uint8_t ch = ' ';
-
-#ifdef __AVR__
-#else
-  uint8_t buf[128];
-  uint8_t len;
-
-#ifdef _WIN32
-  if (kbhit ())
-#else
-  struct timeval tv;
-  fd_set fds;
-  tv.tv_sec = 0;
-  tv.tv_usec = 0;
-  FD_ZERO (&fds);
-  FD_SET (STDIN_FILENO, &fds);
-  select (STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
-  if (FD_ISSET (STDIN_FILENO, &fds))
-#endif
+  /* new brick */
+  if (offset_y >= BOARD_HEIGHT - TETRIS_BRICK_SIZE)
     {
-      len = read (STDIN_FILENO, buf, sizeof (buf) - 1);
-      ch = buf[len - 1];
-    }
-#endif
+      uint16_t x, y;
+      uint8_t rand_brick = rand () % (sizeof (bricks) / sizeof (bricks[0]));
+      uint8_t rand_color = rand () % OUTPUT_COLORS_COUNT + 1;
 
-  return ch;
-}
-
-int
-main (void)
-{
-  uint16_t x;
-  uint16_t y;
-  int16_t offset_x;
-  int16_t offset_y;
-  uint8_t rand_brick;
-  uint8_t rand_color;
-  uint8_t key;
-
-  memset (board, TETRIS_BIT_EMPTY, sizeof (board));
-  initOutput ();
-
-  while (1)
-    {
-      offset_x = (TETRIS_BOARD_WIDTH - TETRIS_BRICK_SIZE) / 2;
+      offset_x = (BOARD_WIDTH - TETRIS_BRICK_SIZE) / 2;
       offset_y = -TETRIS_BRICK_SIZE + 1;
 
-      /* new brick */
-      rand_brick =
-	rand () % (sizeof (TETRIS_BRICKS) / sizeof (TETRIS_BRICKS[0]));
-      rand_color =
-	1 + rand () % (sizeof (TETRIS_COLORS) / sizeof (TETRIS_COLORS[0]));
       memset (brick, 0, sizeof (brick));
       for (x = 0; x < TETRIS_BRICK_SIZE; x++)
 	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
-	  if (TETRIS_BRICKS[rand_brick][x][y])
+	  if (bricks[rand_brick][x][y])
 	    brick[x][y] = rand_color;
 
-      /* game over */
-      if (!canBeAt (offset_x, offset_y))
+      return insertBrick (board, offset_x, offset_y, INSERT);
+    }
+
+  /* move brick */
+  else
+    {
+      insertBrick (board, offset_x, offset_y, REVERSE);
+      offset_y++;
+
+      /* move left */
+      if (key == 'a' && insertBrick (board, offset_x - 1, offset_y, INSERT))
 	{
-	  printf (" !!! GAME OVER !!!  ");
-	  return 0;
+	  offset_x--;
+	  return 1;
 	}
-      for (; offset_y <= TETRIS_BOARD_HEIGHT; offset_y++)
+
+      /* move right */
+      else if (key == 'd'
+	       && insertBrick (board, offset_x + 1, offset_y, INSERT))
 	{
-	  insert (offset_x, offset_y - 1, 1);
+	  offset_x++;
+	  return 1;
+	}
 
-	  /* key actions */
-	  key = getkey ();
-	  if (key == 'a' && canBeAt (offset_x - 1, offset_y))
-	    offset_x--;
-	  else if (key == 'd' && canBeAt (offset_x + 1, offset_y))
-	    offset_x++;
-	  else if (key == 'e')
-	    {
-	      rotate (1);
-	      if (!canBeAt (offset_x, offset_y))
-		rotate (0);
-	    }
-	  else if (key == 'q')
-	    {
-	      rotate (0);
-	      if (!canBeAt (offset_x, offset_y))
-		rotate (1);
-	    }
+      /* rotate left */
+      else if (key == 'e'
+	       && insertBrick (board, offset_x, offset_y, ROTATE_LEFT))
+	return 1;
 
-	  /* go down */
-	  if (!canBeAt (offset_x, offset_y))
-	    {
-	      insert (offset_x, offset_y - 1, 0);
-	      break;
-	    }
-	  insert (offset_x, offset_y, 0);
-	  output ();
-	  usleep (tick * 1000);
+      /* rotate right */
+      else if (key == 'q'
+	       && insertBrick (board, offset_x, offset_y, ROTATE_RIGHT))
+	return 1;
+
+      /* move down */
+      else if (insertBrick (board, offset_x, offset_y, INSERT))
+	return 1;
+
+      /* stay */
+      else
+	{
+	  insertBrick (board, offset_x, offset_y - 1, INSERT);
+	  offset_x = INT16_MAX;
+	  offset_y = INT16_MAX;
+	  nextStep (board, 0);
+	  return 1;
 	}
     }
 

@@ -1,27 +1,43 @@
-PROGNAME  = tetris
+TARGET         = tetris
+SOURCES        = main.c output.c tetris.c
+OBJECTS        =$(SOURCES:.c=.o)
 
-F_CPU     = 16000000
-DEVICE    = atmega8
+CC             = gcc
+CFLAGS         = -Os -Wall
+LDFLAGS        =
 
-AVRLIB    = light_ws2812
-AVRLIBDIR = light_ws2812/light_ws2812_AVR
+F_CPU          = 16000000
+DEVICE         = atmega8
 
-CC        = avr-gcc
-CFLAGS    = -g2 -mmcu=$(DEVICE) -DF_CPU=$(F_CPU) -I$(AVRLIBDIR) -I$(AVRLIBDIR)/Light_WS2812
-CFLAGS   += -Os -ffunction-sections -fdata-sections -fpack-struct -fno-move-loop-invariants -fno-tree-scev-cprop -fno-inline-small-functions
-CFLAGS   += -Wall -Wno-pointer-to-int-cast
-LDFLAGS  += -Wl,--relax,--section-start=.text=0,-Map=main.map
+AVRLIB         = light_ws2812
+AVRLIBDIR      = light_ws2812/light_ws2812_AVR
 
-all:	avr
+debug: CCFLAGS+= -g -D_DEBUG -D_DEBUG_
+debug: all
 
-avr:
+avr: CC        = avr-gcc
+avr: CFLAGS    = -g2 -mmcu=$(DEVICE) -DF_CPU=$(F_CPU) -I$(AVRLIBDIR) -I$(AVRLIBDIR)/Light_WS2812
+avr: CFLAGS   += -Os -ffunction-sections -fdata-sections -fpack-struct -fno-move-loop-invariants -fno-tree-scev-cprop -fno-inline-small-functions
+avr: CFLAGS   += -Wall -Wno-pointer-to-int-cast
+avr: LDFLAGS   = -Wl,--relax,--section-start=.text=0,-Map=main.map*/
+
+all: $(TARGET)
+
+$(TARGET): $(OBJECTS)
+	$(CC) $(LDFLAGS) $(OBJECTS) -o $@
+	
+avr: $(OBJECTS)
 	$(MAKE) -C $(AVRLIBDIR) $(AVRLIB)
-	$(CC) $(CFLAGS) -o $(PROGNAME).o $(PROGNAME).c
-	avr-size $(PROGNAME).o
-	avr-objcopy -j .text -j .data -O ihex $(PROGNAME).o $(PROGNAME).hex
-	avr-objdump -d -S $(PROGNAME).o >$(PROGNAME).lss
+	$(CC) $(CFLAGS) -o $(TARGET).o $(TARGET).c
+	avr-size $(TARGET).o
+	avr-objcopy -j .text -j .data -O ihex $(TARGET).o $(TARGET).hex
+	avr-objdump -d -S $(TARGET).o >$(TARGET).lss
+
+.c.o:
+	$(CC) -c $(CFLAGS) $< -o $@
 
 .PHONY:	clean
 
 clean:
+	$(RM) *.o $(TARGET)
 	$(MAKE) -C $(AVRLIBDIR) clean
