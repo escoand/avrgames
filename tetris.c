@@ -210,8 +210,7 @@ nextStep (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], uint8_t key)
 	  insertBrick (board, offset_x, offset_y - 1, INSERT);
 	  offset_x = INT16_MAX;
 	  offset_y = INT16_MAX;
-	  nextStep (board, 0);
-	  return 1;
+	  return nextStep (board, 0);
 	}
     }
 
