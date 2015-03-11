@@ -119,7 +119,8 @@ insertBrick (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], int16_t _offset_x,
 	      continue;
 
 	    else if (tmp[x][y]
-		     && (board[_offset_x + x][_offset_y + y]
+		     && (_offset_y + y >= BOARD_HEIGHT
+			 || board[_offset_x + x][_offset_y + y]
 			 || _offset_x + x < 0
 			 || _offset_x + x >= BOARD_WIDTH))
 	      return 0;
@@ -151,7 +152,7 @@ uint8_t
 nextStep (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], uint8_t key)
 {
   /* new brick */
-  if (offset_y >= BOARD_HEIGHT - TETRIS_BRICK_SIZE)
+  if (offset_y >= BOARD_HEIGHT)
     {
       uint16_t x, y;
       uint8_t rand_brick = rand () % (sizeof (bricks) / sizeof (bricks[0]));
