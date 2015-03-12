@@ -1,8 +1,18 @@
 #include <stdlib.h>
 #include <string.h>
-#include "main.h"
 #include "output.h"
 #include "tetris.h"
+
+#ifdef __AVR__
+#include <util/delay.h>
+#define usleep(x) uint16_t y=x; for(;y>0;y--) _delay_ms(1);
+#elif _WIN32
+#include <windows.h>
+#define usleep(x) Sleep(x)
+#else
+#include <sys/time.h>
+#define usleep(x) usleep(x * 1000)
+#endif
 
 #define TETRIS_BRICK_SIZE   4
 
@@ -213,6 +223,26 @@ nextStep (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT], uint8_t key)
 	  offset_y = INT16_MAX;
 	  return nextStep (board, 0);
 	}
+    }
+
+  return 0;
+}
+
+int tetris_main() {
+  uint8_t key;
+  uint16_t tick = 200;
+  uint8_t board[BOARD_WIDTH][BOARD_HEIGHT];
+
+  memset (board, 0, sizeof (board));
+  
+  while (1)
+    {
+      initOutput ();
+      key = getKey ();
+      if (!nextStep (board, key))
+	return 1;
+      output (board);
+      usleep (tick);
     }
 
   return 0;

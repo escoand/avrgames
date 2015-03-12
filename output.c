@@ -1,7 +1,6 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "main.h"
 #include "output.h"
 
 #ifdef __AVR__

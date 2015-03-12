@@ -2,8 +2,9 @@
 #define OUTPUT_H_
 
 #include <inttypes.h>
-#include "main.h"
 
+#define BOARD_WIDTH  10
+#define BOARD_HEIGHT 18
 #define OUTPUT_COLORS_COUNT 6
 
 void initOutput ();
