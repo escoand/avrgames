@@ -3,5 +3,5 @@
 int
 main (void)
 {
-  return tetris_main();
+  return tetris_main ();
 }

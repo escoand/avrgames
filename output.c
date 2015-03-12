@@ -67,7 +67,7 @@ output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
 #else
   system ("cls");
   printf ("+---------------------+\n");
-  
+
   for (y = 0; y < BOARD_HEIGHT; y++)
     {
       printf ("| ");
@@ -97,6 +97,7 @@ getKey ()
 #else
   struct timeval tv;
   fd_set fds;
+
   tv.tv_sec = 0;
   tv.tv_usec = 0;
   FD_ZERO (&fds);
@@ -109,5 +110,6 @@ getKey ()
       key = buf[len - 1];
     }
 #endif
+
   return key;
 }
