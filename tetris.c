@@ -96,6 +96,8 @@ uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t offset_x = INT16_MAX;
 int16_t offset_y = INT16_MAX;
 
+uint16_t tick = 200;
+
 uint8_t
 insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 {
@@ -156,6 +158,44 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
   return 1;
 }
 
+void
+fullLines ()
+{
+  int16_t y, z;
+  uint8_t x, blk[BOARD_HEIGHT][BOARD_WIDTH], dst[BOARD_HEIGHT][BOARD_WIDTH];
+
+  z = BOARD_HEIGHT - 1;
+  memset (blk, 0, sizeof (blk));
+  memset (dst, 0, sizeof (dst));
+
+  /* search full lines */
+  for (y = BOARD_HEIGHT - 1; y >= 0; y--)
+    for (x = 0; x < BOARD_WIDTH; x++)
+      if (board[y][x] == 0)
+	{
+	  memcpy (blk[y], board[y], sizeof (blk[y]));
+	  memcpy (dst[z], board[y], sizeof (dst[z]));
+	  z--;
+	  break;
+	}
+
+  /* nothing found */
+  if (z < 0)
+    return;
+
+  /* blink */
+  for (z = 0; z < 3; z++)
+    {
+      output (board);
+      usleep (tick);
+      output (blk);
+      usleep (tick);
+    }
+
+  /* remove lines */
+  memcpy (board, dst, sizeof (board));
+}
+
 uint8_t
 nextStep (uint8_t key)
 {
@@ -181,11 +221,11 @@ nextStep (uint8_t key)
   /* move brick */
   else
     {
-      insertBrick ( offset_x, offset_y, REVERSE);
+      insertBrick (offset_x, offset_y, REVERSE);
       offset_y++;
 
       /* move left */
-      if (key == 'a' && insertBrick ( offset_x - 1, offset_y, INSERT))
+      if (key == 'a' && insertBrick (offset_x - 1, offset_y, INSERT))
 	{
 	  offset_x--;
 	  return 1;
@@ -207,13 +247,14 @@ nextStep (uint8_t key)
 	return 1;
 
       /* move down */
-      else if (insertBrick ( offset_x, offset_y, INSERT))
+      else if (insertBrick (offset_x, offset_y, INSERT))
 	return 1;
 
       /* stay */
       else
 	{
-	  insertBrick ( offset_x, offset_y - 1, INSERT);
+	  insertBrick (offset_x, offset_y - 1, INSERT);
+	  fullLines ();
 	  offset_x = INT16_MAX;
 	  offset_y = INT16_MAX;
 	  return nextStep (0);
@@ -226,16 +267,12 @@ nextStep (uint8_t key)
 int
 tetris_main ()
 {
-  uint8_t key;
-  uint16_t tick = 200;
-
   memset (board, 0, sizeof (board));
-  
+
   while (1)
     {
       initOutput ();
-      key = getKey ();
-      if (!nextStep (key))
+      if (!nextStep (getKey ()))
 	return 1;
       output (board);
       usleep (tick);
