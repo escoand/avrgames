@@ -115,7 +115,7 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 	  }
     }
   else
-    memcpy (tmp, brick, sizeof (brick));
+    memcpy (tmp, brick, sizeof (tmp));
 
   /* check */
   if (action != REVERSE)
