@@ -88,9 +88,6 @@ uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
    }
 };
 
-enum actions
-{ INSERT, REVERSE, ROTATE_LEFT, ROTATE_RIGHT };
-
 uint8_t board[BOARD_HEIGHT][BOARD_WIDTH];
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t offset_x = INT16_MAX;
@@ -99,7 +96,7 @@ int16_t offset_y = INT16_MAX;
 uint16_t tick = 200;
 
 uint8_t
-insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
+insertBrick (int16_t _offset_x, int16_t _offset_y, enum tetris_actions action)
 {
   uint8_t x, y, tmp[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 
@@ -109,10 +106,10 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
       for (x = 0; x < TETRIS_BRICK_SIZE; x++)
 	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
 	  {
-	    if (action == ROTATE_LEFT)
+	    if (action == ROTATE_RIGHT)
 	      tmp[x][TETRIS_BRICK_SIZE - y - 1] = brick[y][x];
 
-	    else if (action == ROTATE_RIGHT)
+	    else if (action == ROTATE_LEFT)
 	      tmp[TETRIS_BRICK_SIZE - x - 1][y] = brick[y][x];
 	  }
     }
@@ -148,7 +145,7 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 	  else if (action == REVERSE && brick[y][x])
 	    board[_offset_y + y][_offset_x + x] = 0;
 
-	  /* insert */
+	  /* NONE */
 	  else if (action != REVERSE && tmp[y][x])
 	    board[_offset_y + y][_offset_x + x] = tmp[y][x];
 	}
@@ -197,7 +194,7 @@ fullLines ()
 }
 
 uint8_t
-nextStep (uint8_t key)
+nextStep (enum tetris_actions action)
 {
   /* new brick */
   if (offset_y >= BOARD_HEIGHT)
@@ -215,7 +212,7 @@ nextStep (uint8_t key)
 	  if (bricks[rand_brick][x][y])
 	    brick[x][y] = rand_color;
 
-      return insertBrick (offset_x, offset_y, INSERT);
+      return insertBrick (offset_x, offset_y, NONE);
     }
 
   /* move brick */
@@ -225,35 +222,41 @@ nextStep (uint8_t key)
       offset_y++;
 
       /* move left */
-      if (key == 'a' && insertBrick (offset_x - 1, offset_y, INSERT))
+      if (action == MOVE_LEFT && insertBrick (offset_x - 1, offset_y, NONE))
 	{
 	  offset_x--;
 	  return 1;
 	}
 
       /* move right */
-      else if (key == 'd' && insertBrick (offset_x + 1, offset_y, INSERT))
+      else if (action == MOVE_RIGHT
+	       && insertBrick (offset_x + 1, offset_y, NONE))
 	{
 	  offset_x++;
 	  return 1;
 	}
 
       /* rotate left */
-      else if (key == 'e' && insertBrick (offset_x, offset_y, ROTATE_LEFT))
+      else if (action == ROTATE_LEFT
+	       && insertBrick (offset_x, offset_y, ROTATE_LEFT))
 	return 1;
 
       /* rotate right */
-      else if (key == 'q' && insertBrick (offset_x, offset_y, ROTATE_RIGHT))
+      else if (action == ROTATE_RIGHT
+	       && insertBrick (offset_x, offset_y, ROTATE_RIGHT))
 	return 1;
 
       /* move down */
-      else if (insertBrick (offset_x, offset_y, INSERT))
+      // TODO: move down
+      
+      /* nothing */
+      else if (insertBrick (offset_x, offset_y, NONE))
 	return 1;
 
       /* stay */
       else
 	{
-	  insertBrick (offset_x, offset_y - 1, INSERT);
+	  insertBrick (offset_x, offset_y - 1, NONE);
 	  fullLines ();
 	  offset_x = INT16_MAX;
 	  offset_y = INT16_MAX;
@@ -267,12 +270,39 @@ nextStep (uint8_t key)
 int
 tetris_main ()
 {
+  enum tetris_actions action;
+
   memset (board, 0, sizeof (board));
 
   while (1)
     {
+#ifdef __AVR__
+      action = NONE;
+#else
       initOutput ();
-      if (!nextStep (getKey ()))
+      switch(getKey()) {
+      case 's':
+	action = MOVE_DOWN;
+	break;
+      case 'a':
+	action = MOVE_LEFT;
+	break;
+      case 'd':
+	action = MOVE_RIGHT;
+	break;
+      case 'q':
+	action = ROTATE_LEFT;
+	break;
+      case 'e':
+	action = ROTATE_RIGHT;
+	break;
+      default:
+	action = NONE;
+	break;
+}
+#endif
+
+      if (!nextStep (action))
 	return 1;
       output (board);
       ms_sleep (tick);
