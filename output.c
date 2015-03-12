@@ -67,6 +67,8 @@ output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
   ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
 #else
   system ("cls");
+  printf ("+---------------------+\n");
+  
   for (y = 0; y < BOARD_HEIGHT; y++)
     {
       printf ("| ");
@@ -77,7 +79,7 @@ output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
       printf ("|\n");
     }
 
-  printf (">---------------------<\n");
+  printf ("+---------------------+\n");
 #endif
 }
 
