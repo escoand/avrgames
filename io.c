@@ -1,7 +1,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "output.h"
+#include "io.h"
 
 #ifdef __AVR__
 #include <light_ws2812.h>
@@ -65,7 +65,11 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 
   ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
 #else
+#if _WIN32
   system ("cls");
+#else
+  system ("clear");
+#endif
   printf ("+---------------------+\n");
 
     for (y = 0; y < BOARD_HEIGHT; y++)
@@ -85,7 +89,7 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 uint8_t
 getKey ()
 {
-  uint8_t key = ' ';
+  uint8_t key = 0;
 
 #ifdef __AVR__
 #else

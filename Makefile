@@ -1,5 +1,5 @@
 TARGET         = game
-SOURCES        = main.c output.c tetris.c
+SOURCES        = main.c io.c tetris.c
 OBJECTS        = $(SOURCES:.c=.o)
 
 CC             = gcc

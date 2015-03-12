@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "output.h"
+#include "io.h"
 #include "tetris.h"
 
 #ifdef __AVR__
