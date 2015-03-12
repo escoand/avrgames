@@ -72,10 +72,10 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 #endif
   printf ("+---------------------+\n");
 
-    for (y = 0; y < BOARD_HEIGHT; y++)
+  for (y = 0; y < BOARD_HEIGHT; y++)
     {
       printf ("| ");
-	for (x = 0; x < BOARD_WIDTH; x++)
+      for (x = 0; x < BOARD_WIDTH; x++)
 	{
 	  printf ("%c ", output_colors[board[y][x]]);
 	}

@@ -202,6 +202,7 @@ nextStep (enum tetris_actions action)
       uint8_t x, y;
       uint8_t rand_brick = rand () % (sizeof (bricks) / sizeof (bricks[0]));
       uint8_t rand_color = rand () % OUTPUT_COLORS_COUNT + 1;
+      // TODO: real random for windows
 
       offset_x = (BOARD_WIDTH - TETRIS_BRICK_SIZE) / 2;
       offset_y = -TETRIS_BRICK_SIZE + 1;
@@ -248,7 +249,7 @@ nextStep (enum tetris_actions action)
 
       /* move down */
       // TODO: move down
-      
+
       /* nothing */
       else if (insertBrick (offset_x, offset_y, NONE))
 	return 1;
@@ -280,26 +281,27 @@ tetris_main ()
       action = NONE;
 #else
       initOutput ();
-      switch(getKey()) {
-      case 's':
-	action = MOVE_DOWN;
-	break;
-      case 'a':
-	action = MOVE_LEFT;
-	break;
-      case 'd':
-	action = MOVE_RIGHT;
-	break;
-      case 'q':
-	action = ROTATE_LEFT;
-	break;
-      case 'e':
-	action = ROTATE_RIGHT;
-	break;
-      default:
-	action = NONE;
-	break;
-}
+      switch (getKey ())
+	{
+	case 's':
+	  action = MOVE_DOWN;
+	  break;
+	case 'a':
+	  action = MOVE_LEFT;
+	  break;
+	case 'd':
+	  action = MOVE_RIGHT;
+	  break;
+	case 'q':
+	  action = ROTATE_LEFT;
+	  break;
+	case 'e':
+	  action = ROTATE_RIGHT;
+	  break;
+	default:
+	  action = NONE;
+	  break;
+	}
 #endif
 
       if (!nextStep (action))
