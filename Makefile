@@ -40,4 +40,4 @@ avr: $(OBJECTS)
 .PHONY:	clean
 
 clean:
-	$(RM) *.o *.hex *.lss $(TARGET)*
+	$(RM) *.hex *.lss *.map *.o $(TARGET)*
