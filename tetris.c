@@ -5,13 +5,13 @@
 
 #ifdef __AVR__
 #include <util/delay.h>
-#define usleep(x) uint16_t y=x; for(;y>0;y--) _delay_ms(1);
+#define ms_sleep(x) {uint16_t ms; for(ms=x;ms>0;ms--) _delay_ms(1);}
 #elif _WIN32
 #include <windows.h>
-#define usleep(x) Sleep(x)
+#define ms_sleep(x) Sleep(x)
 #else
 #include <sys/time.h>
-#define usleep(x) usleep(x * 1000)
+#define ms_sleep(x) usleep(x * 1000)
 #endif
 
 #define TETRIS_BRICK_SIZE   4
@@ -187,9 +187,9 @@ fullLines ()
   for (z = 0; z < 3; z++)
     {
       output (board);
-      usleep (tick);
+      ms_sleep (tick);
       output (blk);
-      usleep (tick);
+      ms_sleep (tick);
     }
 
   /* remove lines */
@@ -275,7 +275,7 @@ tetris_main ()
       if (!nextStep (getKey ()))
 	return 1;
       output (board);
-      usleep (tick);
+      ms_sleep (tick);
     }
 
   return 0;
