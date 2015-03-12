@@ -18,23 +18,13 @@
 
 uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
   {
-   {0, 0, 0, 0}
+   {0, 1, 0, 0}
    ,
-   {0, 0, 0, 0}
+   {0, 1, 0, 0}
    ,
-   {1, 1, 1, 1}
+   {0, 1, 0, 0}
    ,
-   {0, 0, 0, 0}
-   }
-  ,
-  {
-   {0, 0, 0, 0}
-   ,
-   {1, 0, 0, 0}
-   ,
-   {1, 1, 1, 0}
-   ,
-   {0, 0, 0, 0}
+   {0, 1, 0, 0}
    }
   ,
   {
@@ -42,9 +32,19 @@ uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
    ,
    {0, 0, 1, 0}
    ,
-   {1, 1, 1, 0}
+   {0, 0, 1, 0}
    ,
+   {0, 1, 1, 0}
+   }
+  ,
+  {
    {0, 0, 0, 0}
+   ,
+   {0, 1, 0, 0}
+   ,
+   {0, 1, 0, 0}
+   ,
+   {0, 1, 1, 0}
    }
   ,
   {
@@ -60,21 +60,11 @@ uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
   {
    {0, 0, 0, 0}
    ,
-   {0, 1, 1, 0}
-   ,
-   {1, 1, 0, 0}
-   ,
-   {0, 0, 0, 0}
-   }
-  ,
-  {
-   {0, 0, 0, 0}
-   ,
-   {1, 1, 0, 0}
+   {0, 1, 0, 0}
    ,
    {0, 1, 1, 0}
    ,
-   {0, 0, 0, 0}
+   {0, 0, 1, 0}
    }
   ,
   {
@@ -82,16 +72,26 @@ uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
    ,
    {0, 0, 1, 0}
    ,
-   {0, 1, 1, 1}
+   {0, 1, 1, 0}
    ,
+   {0, 1, 0, 0}
+   }
+  ,
+  {
    {0, 0, 0, 0}
+   ,
+   {0, 1, 0, 0}
+   ,
+   {0, 1, 1, 0}
+   ,
+   {0, 1, 0, 0}
    }
 };
 
 enum actions
 { INSERT, REVERSE, ROTATE_LEFT, ROTATE_RIGHT };
 
-  uint8_t board[BOARD_WIDTH][BOARD_HEIGHT];
+uint8_t board[BOARD_HEIGHT][BOARD_WIDTH];
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t offset_x = INT16_MAX;
 int16_t offset_y = INT16_MAX;
@@ -108,10 +108,10 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 	for (y = 0; y < TETRIS_BRICK_SIZE; y++)
 	  {
 	    if (action == ROTATE_LEFT)
-	      tmp[TETRIS_BRICK_SIZE - y - 1][x] = brick[x][y];
+	      tmp[x][TETRIS_BRICK_SIZE - y - 1] = brick[y][x];
 
 	    else if (action == ROTATE_RIGHT)
-	      tmp[y][TETRIS_BRICK_SIZE - x - 1] = brick[x][y];
+	      tmp[TETRIS_BRICK_SIZE - x - 1][y] = brick[y][x];
 	  }
     }
   else
@@ -126,9 +126,9 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 	    if (_offset_y + y < 0)
 	      continue;
 
-	    else if (tmp[x][y]
+	    else if (tmp[y][x]
 		     && (_offset_y + y >= BOARD_HEIGHT
-			 || board[_offset_x + x][_offset_y + y]
+			 || board[_offset_y + y][_offset_x + x]
 			 || _offset_x + x < 0
 			 || _offset_x + x >= BOARD_WIDTH))
 	      return 0;
@@ -143,12 +143,12 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum actions action)
 	    continue;
 
 	  /* reverse */
-	  else if (action == REVERSE && brick[x][y])
-	    board[_offset_x + x][_offset_y + y] = 0;
+	  else if (action == REVERSE && brick[y][x])
+	    board[_offset_y + y][_offset_x + x] = 0;
 
 	  /* insert */
-	  else if (action != REVERSE && tmp[x][y])
-	    board[_offset_x + x][_offset_y + y] = tmp[x][y];
+	  else if (action != REVERSE && tmp[y][x])
+	    board[_offset_y + y][_offset_x + x] = tmp[y][x];
 	}
     }
 

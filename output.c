@@ -44,7 +44,7 @@ initOutput ()
 }
 
 void
-output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
+output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 {
   uint16_t x;
   uint16_t y;
@@ -56,11 +56,11 @@ output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
     for (y = 0; y < BOARD_HEIGHT; y++)
       {
 	leds[x * BOARD_WIDTH + y].r =
-	  (output_colors[board[x][y]] & 0xff0000) >> 16;
+	  (output_colors[board[y][x]] & 0xff0000) >> 16;
 	leds[x * BOARD_WIDTH + y].g =
-	  (output_colors[board[x][y]] & 0x00ff00) >> 8;
+	  (output_colors[board[y][x]] & 0x00ff00) >> 8;
 	leds[x * BOARD_WIDTH + y].b =
-	  (output_colors[board[x][y]] & 0x0000ff) >> 0;
+	  (output_colors[board[y][x]] & 0x0000ff) >> 0;
       }
 
   ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
@@ -68,12 +68,12 @@ output (uint8_t board[BOARD_WIDTH][BOARD_HEIGHT])
   system ("cls");
   printf ("+---------------------+\n");
 
-  for (y = 0; y < BOARD_HEIGHT; y++)
+    for (y = 0; y < BOARD_HEIGHT; y++)
     {
       printf ("| ");
-      for (x = 0; x < BOARD_WIDTH; x++)
+	for (x = 0; x < BOARD_WIDTH; x++)
 	{
-	  printf ("%c ", output_colors[board[x][y]]);
+	  printf ("%c ", output_colors[board[y][x]]);
 	}
       printf ("|\n");
     }
