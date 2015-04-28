@@ -17,7 +17,7 @@
 
 uint32_t output_colors[] = {
 #ifdef __AVR__
-  0x000000, 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff
+  0x000000, 0x100000, 0x001000, 0x000010, 0x101000, 0x100010, 0x001010
 #else
   0x20, 0x23, 0x24, 0x26, 0x3d, 0x40, 0x4f
 #endif
@@ -52,18 +52,18 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 #ifdef __AVR__
   struct cRGB leds[BOARD_WIDTH * BOARD_HEIGHT];
 
-  for (x = 0; x < BOARD_WIDTH; x++)
-    for (y = 0; y < BOARD_HEIGHT; y++)
+  for (y = 0; y < BOARD_HEIGHT; y++)
+    for (x = 0; x < BOARD_WIDTH; x++)
       {
-	leds[x * BOARD_WIDTH + y].r =
-	  (output_colors[board[y][x]] & 0xff0000) >> 16;
-	leds[x * BOARD_WIDTH + y].g =
-	  (output_colors[board[y][x]] & 0x00ff00) >> 8;
-	leds[x * BOARD_WIDTH + y].b =
-	  (output_colors[board[y][x]] & 0x0000ff) >> 0;
+	leds[x * BOARD_HEIGHT + y].r =
+	  (output_colors[board[y][x]] & 0x00ff0000) >> 16;
+	leds[x * BOARD_HEIGHT + y].g =
+	  (output_colors[board[y][x]] & 0x0000ff00) >> 8;
+	leds[x * BOARD_HEIGHT + y].b =
+	  (output_colors[board[y][x]] & 0x000000ff) >> 0;
       }
 
-  ws2812_setleds (leds, sizeof (leds) / sizeof (struct cRGB));
+  ws2812_setleds (leds, BOARD_WIDTH * BOARD_HEIGHT);
 #else
 #if _WIN32
   system ("cls");
