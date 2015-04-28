@@ -11,7 +11,7 @@
 #include <windows.h>
 #define ms_sleep(x) Sleep(x)
 #else
-#include <sys/time.h>
+#include <unistd.h>
 #define ms_sleep(x) usleep(x * 1000)
 #endif
 
