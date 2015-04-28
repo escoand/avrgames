@@ -4,6 +4,7 @@
 #include "tetris.h"
 
 #ifdef __AVR__
+#include <avr/io.h>
 #include <util/delay.h>
 #define ms_sleep(x) {uint16_t ms; for(ms=x;ms>0;ms--) _delay_ms(1);}
 #elif _WIN32
@@ -272,15 +273,29 @@ int
 tetris_main ()
 {
   enum tetris_actions action;
-
   memset (board, 0, sizeof (board));
+
+#ifdef __AVR__
+  DDRD |= _BV (PD7);
+  DDRB |= _BV (PB0);
+  PORTB |= _BV (PB0);
+  PORTD |= _BV (PD7);
+#endif
+
+  initOutput ();
+
+#ifdef __AVR__
+  PORTB &= ~_BV (PB0);
+  PORTD &= ~_BV (PD7);
+#endif
 
   while (1)
     {
 #ifdef __AVR__
+      PORTB |= _BV (PB0);
+      ms_sleep (500);
       action = NONE;
 #else
-      initOutput ();
       switch (getKey ())
 	{
 	case 's':
@@ -306,7 +321,14 @@ tetris_main ()
 
       if (!nextStep (action))
 	return 1;
+#ifdef __AVR__
+      PORTB &= ~_BV (PB0);
+      PORTD |= _BV (PD7);
+#endif
       output (board);
+#ifdef __AVR__
+      PORTD &= ~_BV (PD7);
+#endif
       ms_sleep (tick);
     }
 
