@@ -24,7 +24,7 @@ uint32_t output_colors[] = {
 };
 
 void
-initOutput ()
+initOutput (void)
 {
 #ifdef __AVR__
 #elif _WIN32
@@ -87,7 +87,7 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 }
 
 uint8_t
-getKey ()
+getKey (void)
 {
   uint8_t key = 0;
 

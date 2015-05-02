@@ -157,7 +157,7 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum tetris_actions action)
 }
 
 void
-fullLines ()
+fullLines (void)
 {
   int16_t y, z;
   uint8_t x, blk[BOARD_HEIGHT][BOARD_WIDTH], dst[BOARD_HEIGHT][BOARD_WIDTH];
@@ -270,7 +270,7 @@ nextStep (enum tetris_actions action)
 }
 
 int
-tetris_main ()
+tetris_main (void)
 {
   enum tetris_actions action;
   memset (board, 0, sizeof (board));

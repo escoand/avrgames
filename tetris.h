@@ -5,6 +5,6 @@ enum tetris_actions
 { NONE, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT,
     REVERSE };
 
-int tetris_main ();
+int tetris_main (void);
 
 #endif /* TETRIS_H_ */

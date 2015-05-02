@@ -7,8 +7,8 @@
 #define BOARD_HEIGHT 18
 #define OUTPUT_COLORS_COUNT 6
 
-void initOutput ();
+void initOutput (void);
 void output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH]);
-uint8_t getKey ();
+uint8_t getKey (void);
 
 #endif /* OUTPUT_H_ */
