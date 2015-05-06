@@ -275,25 +275,13 @@ tetris_main (void)
   enum tetris_actions action;
   memset (board, 0, sizeof (board));
 
-#ifdef __AVR__
-  DDRD |= _BV (PD7);
-  DDRB |= _BV (PB0);
-  PORTB |= _BV (PB0);
-  PORTD |= _BV (PD7);
-#endif
-
   initOutput ();
-
-#ifdef __AVR__
-  PORTB &= ~_BV (PB0);
-  PORTD &= ~_BV (PD7);
-#endif
 
   while (1)
     {
+
 #ifdef __AVR__
-      PORTB |= _BV (PB0);
-      ms_sleep (500);
+      ms_sleep (tick);
       action = NONE;
 #else
       switch (getKey ())
@@ -320,15 +308,8 @@ tetris_main (void)
 #endif
 
       if (!nextStep (action))
-	return 1;
-#ifdef __AVR__
-      PORTB &= ~_BV (PB0);
-      PORTD |= _BV (PD7);
-#endif
+	break;
       output (board);
-#ifdef __AVR__
-      PORTD &= ~_BV (PD7);
-#endif
       ms_sleep (tick);
     }
 
