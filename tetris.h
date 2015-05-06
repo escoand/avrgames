@@ -3,7 +3,8 @@
 
 enum tetris_actions
 { NONE, MOVE_DOWN, MOVE_LEFT, MOVE_RIGHT, ROTATE_LEFT, ROTATE_RIGHT,
-    REVERSE };
+  REVERSE
+};
 
 int tetris_main (void);
 
