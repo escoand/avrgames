@@ -6,6 +6,7 @@
 #ifdef __AVR__
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <util/delay.h>
 #else
 #include <unistd.h>
 #if _WIN32
@@ -27,7 +28,7 @@
 // Fixed cycles used by the inner loop
 #define w_fixedlow    2
 #define w_fixedhigh   4
-#define w_fixedtotal  8
+#define w_fixedtotal  18
 
 // Insert NOPs to match the timing, if possible
 #define w_zerocycles    (((F_CPU/1000)*w_zeropulse          )/1000000)
@@ -108,107 +109,118 @@ initOutput (void)
 /* ported from https://github.com/cpldcpu/light_ws2812 */
 #ifdef __AVR__
 void
-ws2812_byte (uint8_t byte, uint8_t maskhi, uint8_t masklo)
+ws2818_bytes (const uint8_t * bytes, const uint8_t skip, const uint8_t len,
+	      const uint8_t maskhi, const uint8_t masklo)
 {
-  uint8_t ctr;
+  uint8_t ctr, cur;
 
-  asm volatile ("       ldi   %0,8  \n\t" "loop%=:            \n\t" "       out   %2,%3 \n\t"	//  '1' [01] '0' [01] - re
+  // TODO: better skip mechanism
+  for (int16_t i = -skip * 3; i < len * 3; i++)
+    {
+      cur = i < 0 ? 0 : bytes[i];
+
+      asm volatile ("       ldi   %0,8  \n\t" "loop%=:            \n\t" "       out   %2,%3 \n\t"	//  '1' [01] '0' [01] - re
 #if (w1_nops&1)
-		w_nop1
+		    w_nop1
 #endif
 #if (w1_nops&2)
-		w_nop2
+		    w_nop2
 #endif
 #if (w1_nops&4)
-		w_nop4
+		    w_nop4
 #endif
 #if (w1_nops&8)
-		w_nop8
+		    w_nop8
 #endif
 #if (w1_nops&16)
-		w_nop16
+		    w_nop16
 #endif
-		"       sbrs  %1,7  \n\t"	//  '1' [03] '0' [02]
-		"       out   %2,%4 \n\t"	//  '1' [--] '0' [03] - fe-low
-		"       lsl   %1    \n\t"	//  '1' [04] '0' [04]
+		    "       sbrs  %1,7  \n\t"	//  '1' [03] '0' [02]
+		    "       out   %2,%4 \n\t"	//  '1' [--] '0' [03] - fe-low
+		    "       lsl   %1    \n\t"	//  '1' [04] '0' [04]
 #if (w2_nops&1)
-		w_nop1
+		    w_nop1
 #endif
 #if (w2_nops&2)
-		w_nop2
+		    w_nop2
 #endif
 #if (w2_nops&4)
-		w_nop4
+		    w_nop4
 #endif
 #if (w2_nops&8)
-		w_nop8
+		    w_nop8
 #endif
 #if (w2_nops&16)
-		w_nop16
+		    w_nop16
 #endif
-		"       out   %2,%4 \n\t"	//  '1' [+1] '0' [+1] - fe-high
+		    "       out   %2,%4 \n\t"	//  '1' [+1] '0' [+1] - fe-high
 #if (w3_nops&1)
-		w_nop1
+		    w_nop1
 #endif
 #if (w3_nops&2)
-		w_nop2
+		    w_nop2
 #endif
 #if (w3_nops&4)
-		w_nop4
+		    w_nop4
 #endif
 #if (w3_nops&8)
-		w_nop8
+		    w_nop8
 #endif
 #if (w3_nops&16)
-		w_nop16
+		    w_nop16
 #endif
-		"       dec   %0    \n\t"	//  '1' [+2] '0' [+2]
-		"       brne  loop%=\n\t"	//  '1' [+3] '0' [+4]
-		:"=&d" (ctr):"r" (byte), "I" (_SFR_IO_ADDR (PORT_LEDS)),
-		"r" (maskhi), "r" (masklo));
+		    "       dec   %0    \n\t"	//  '1' [+2] '0' [+2]
+		    "       brne  loop%=\n\t"	//  '1' [+3] '0' [+4]
+		    :"=&d" (ctr):"r" (cur),
+		    "I" (_SFR_IO_ADDR (PORT_LEDS)), "r" (maskhi),
+		    "r" (masklo));
+    }
 }
 #endif
 
 void
-output (board_matrix *board)
+output (board_matrix * board)
 {
   uint16_t x, y;
 
 #ifdef __AVR__
   uint8_t maskhi, masklo;
-  uint16_t prev;
+  uint16_t prev, z;
+  uint8_t bytes[BOARD_MAX_OUTPUT * 3];
 
+  DDR_LEDS |= _BV (PIN_LEDS);
   maskhi = _BV (PIN_LEDS);
   masklo = ~maskhi & PORT_LEDS;
   maskhi |= PORT_LEDS;
   prev = SREG;
   cli ();
 
-  for (int i = 0; i < BOARD_HEIGHT * BOARD_WIDTH; i++)
+  for (int16_t i = BOARD_HEIGHT * BOARD_WIDTH - 1; i >= 0; i--)
     {
       x = i / BOARD_HEIGHT;
 #if BOARD_STRIPE_MODE == 0
       y = i % BOARD_HEIGHT;
 #elif BOARD_STRIPE_MODE == 1
-      y = BOARD_HEIGHT - i % BOARD_HEIGHT - 1;
+      y = BOARD_HEIGHT - (i % BOARD_HEIGHT) - 1;
 #elif BOARD_STRIPE_MODE == 2
-      y =
-	abs (((i / BOARD_HEIGHT) % 2 ? BOARD_HEIGHT - 1 : 0) -
-	     i % BOARD_HEIGHT);
+      y = abs ((x % 2 ? BOARD_HEIGHT - 1 : 0) - i % BOARD_HEIGHT);
 #elif BOARD_STRIPE_MODE == 3
-      y =
-	abs (((i / BOARD_HEIGHT) % 2 ? 0 : BOARD_HEIGHT - 1) -
-	     i % BOARD_HEIGHT);
+      y = abs ((x % 2 ? 0 : BOARD_HEIGHT - 1) - i % BOARD_HEIGHT);
 #endif
-      ws2812_byte ((output_colors[(*board)[y][x]] & 0x00ff00) >> 8, maskhi,
-		   masklo);
-      ws2812_byte ((output_colors[(*board)[y][x]] & 0xff0000) >> 16, maskhi,
-		   masklo);
-      ws2812_byte ((output_colors[(*board)[y][x]] & 0x0000ff) >> 0, maskhi,
-		   masklo);
+      z = 3 * (i % BOARD_MAX_OUTPUT);
+
+      bytes[z + 0] = (output_colors[(*board)[y][x]] & 0x00ff00) >> 8;
+      bytes[z + 1] = (output_colors[(*board)[y][x]] & 0xff0000) >> 16;
+      bytes[z + 2] = (output_colors[(*board)[y][x]] & 0x0000ff) >> 0;
+
+/* write bytes */
+      if (z == 0)
+	ws2818_bytes (bytes, i, BOARD_MAX_OUTPUT, maskhi, masklo);
     }
 
   SREG = prev;
+  _delay_us (50);
+
 #else
 #if _WIN32
   system ("cls");

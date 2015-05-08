@@ -4,7 +4,7 @@ OBJ    = $(SRC:.c=.o) $(ASRC:.S=.o)
 LST    = $(ASRC:.S=.lst) $(SRC:.c=.lst)
 
 MCU    = attiny85
-F_CPU  = 6400000UL
+F_CPU  = 8000000UL
 
 FORMAT = ihex
 
