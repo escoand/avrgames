@@ -3,6 +3,9 @@
 
 #include <inttypes.h>
 
+#define PORT_LEDS    PORTB
+#define PIN_LEDS     1
+
 #define BOARD_WIDTH  10
 #define BOARD_HEIGHT 18
 #define BOARD_STRIPE_MODE 3	// 0=top-bottom 1=bottom-top 2=chain-from-top 3=chain-from-bottom
