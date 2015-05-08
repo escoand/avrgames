@@ -89,7 +89,7 @@ uint8_t bricks[][TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE] = {
    }
 };
 
-uint8_t board[BOARD_HEIGHT][BOARD_WIDTH];
+board_matrix board;
 uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t offset_x = INT16_MAX;
 int16_t offset_y = INT16_MAX;
@@ -184,9 +184,9 @@ fullLines (void)
   /* blink */
   for (z = 0; z < 3; z++)
     {
-      output (board);
+      output (&board);
       ms_sleep (tick);
-      output (blk);
+      output (&blk);
       ms_sleep (tick);
     }
 
@@ -308,7 +308,7 @@ tetris_main (void)
 
       if (!nextStep (action))
 	break;
-      output (board);
+      output (&board);
       ms_sleep (tick);
     }
 

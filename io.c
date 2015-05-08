@@ -170,7 +170,7 @@ ws2812_byte (uint8_t byte, uint8_t maskhi, uint8_t masklo)
 #endif
 
 void
-output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
+output (board_matrix *board)
 {
   uint16_t x, y;
 
@@ -200,11 +200,11 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 	abs (((i / BOARD_HEIGHT) % 2 ? 0 : BOARD_HEIGHT - 1) -
 	     i % BOARD_HEIGHT);
 #endif
-      ws2812_byte ((output_colors[board[y][x]] & 0x00ff00) >> 8, maskhi,
+      ws2812_byte ((output_colors[(*board)[y][x]] & 0x00ff00) >> 8, maskhi,
 		   masklo);
-      ws2812_byte ((output_colors[board[y][x]] & 0xff0000) >> 16, maskhi,
+      ws2812_byte ((output_colors[(*board)[y][x]] & 0xff0000) >> 16, maskhi,
 		   masklo);
-      ws2812_byte ((output_colors[board[y][x]] & 0x0000ff) >> 0, maskhi,
+      ws2812_byte ((output_colors[(*board)[y][x]] & 0x0000ff) >> 0, maskhi,
 		   masklo);
     }
 
