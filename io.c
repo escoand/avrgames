@@ -172,7 +172,7 @@ ws2818_bytes (const uint8_t * bytes, const uint8_t skip, const uint8_t len,
 		    "       dec   %0    \n\t"	//  '1' [+2] '0' [+2]
 		    "       brne  loop%=\n\t"	//  '1' [+3] '0' [+4]
 		    :"=&d" (ctr):"r" (cur),
-		    "I" (_SFR_IO_ADDR (PORT_LEDS)), "r" (maskhi),
+		    "I" (_SFR_IO_ADDR (PORTREG_STRIPE)), "r" (maskhi),
 		    "r" (masklo));
     }
 }
@@ -186,12 +186,12 @@ output (board_matrix * board)
 #ifdef __AVR__
   uint8_t maskhi, masklo;
   uint16_t prev, z;
-  uint8_t bytes[BOARD_MAX_OUTPUT * 3];
+  uint8_t bytes[OUTPUT_BLOCK_SIZE * 3];
 
-  DDR_LEDS |= _BV (PIN_LEDS);
-  maskhi = _BV (PIN_LEDS);
-  masklo = ~maskhi & PORT_LEDS;
-  maskhi |= PORT_LEDS;
+  DDRREG_STRIPE |= _BV (PIN_STRIPE);
+  maskhi = _BV (PIN_STRIPE);
+  masklo = ~maskhi & PORTREG_STRIPE;
+  maskhi |= PORTREG_STRIPE;
   prev = SREG;
   cli ();
 
@@ -207,7 +207,7 @@ output (board_matrix * board)
 #elif BOARD_STRIPE_MODE == 3
       y = abs ((x % 2 ? 0 : BOARD_HEIGHT - 1) - i % BOARD_HEIGHT);
 #endif
-      z = 3 * (i % BOARD_OUTPUT_BLOCK);
+      z = 3 * (i % OUTPUT_BLOCK_SIZE);
 
       bytes[z + 0] = (output_colors[(*board)[y][x]] & 0x00ff00) >> 8;
       bytes[z + 1] = (output_colors[(*board)[y][x]] & 0xff0000) >> 16;
@@ -215,7 +215,7 @@ output (board_matrix * board)
 
 /* write bytes */
       if (z == 0)
-	ws2818_bytes (bytes, i, BOARD_OUTPUT_BLOCK, maskhi, masklo);
+	ws2818_bytes (bytes, i, OUTPUT_BLOCK_SIZE, maskhi, masklo);
     }
 
   SREG = prev;
