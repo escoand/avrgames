@@ -48,19 +48,30 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 {
   uint16_t x;
   uint16_t y;
+  uint16_t pos;
 
 #ifdef __AVR__
   struct cRGB leds[BOARD_WIDTH * BOARD_HEIGHT];
 
-  for (y = 0; y < BOARD_HEIGHT; y++)
-    for (x = 0; x < BOARD_WIDTH; x++)
+  for (x = 0; x < BOARD_WIDTH; x++)
+    for (y = 0; y < BOARD_HEIGHT; y++)
       {
-	leds[x * BOARD_HEIGHT + y].r =
-	  (output_colors[board[y][x]] & 0x00ff0000) >> 16;
-	leds[x * BOARD_HEIGHT + y].g =
-	  (output_colors[board[y][x]] & 0x0000ff00) >> 8;
-	leds[x * BOARD_HEIGHT + y].b =
-	  (output_colors[board[y][x]] & 0x000000ff) >> 0;
+#if BOARD_STRIPE_MODE == 0
+	pos = x * BOARD_HEIGHT + y;
+#elif BOARD_STRIPE_MODE == 1
+	pos = x * BOARD_HEIGHT + BOARD_HEIGHT - y - 1;
+#elif BOARD_STRIPE_MODE == 2
+	pos =
+	  !(x % 2) ? (x * BOARD_HEIGHT + y) : (x * BOARD_HEIGHT +
+					       BOARD_HEIGHT - y - 1);
+#elif BOARD_STRIPE_MODE == 3
+	pos =
+	  (x % 2) ? (x * BOARD_HEIGHT + y) : (x * BOARD_HEIGHT +
+					      BOARD_HEIGHT - y - 1);
+#endif
+	leds[pos].r = (output_colors[board[y][x]] & 0x00ff0000) >> 16;
+	leds[pos].g = (output_colors[board[y][x]] & 0x0000ff00) >> 8;
+	leds[pos].b = (output_colors[board[y][x]] & 0x000000ff) >> 0;
       }
 
   ws2812_setleds (leds, BOARD_WIDTH * BOARD_HEIGHT);
