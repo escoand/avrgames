@@ -61,13 +61,9 @@ output (uint8_t board[BOARD_HEIGHT][BOARD_WIDTH])
 #elif BOARD_STRIPE_MODE == 1
 	pos = x * BOARD_HEIGHT + BOARD_HEIGHT - y - 1;
 #elif BOARD_STRIPE_MODE == 2
-	pos =
-	  !(x % 2) ? (x * BOARD_HEIGHT + y) : (x * BOARD_HEIGHT +
-					       BOARD_HEIGHT - y - 1);
+	pos = x * BOARD_HEIGHT + (! x % 2 ? y : BOARD_HEIGHT - y - 1);
 #elif BOARD_STRIPE_MODE == 3
-	pos =
-	  (x % 2) ? (x * BOARD_HEIGHT + y) : (x * BOARD_HEIGHT +
-					      BOARD_HEIGHT - y - 1);
+	pos = x * BOARD_HEIGHT + (x % 2 ? y : BOARD_HEIGHT - y - 1);
 #endif
 	leds[pos].r = (output_colors[board[y][x]] & 0x00ff0000) >> 16;
 	leds[pos].g = (output_colors[board[y][x]] & 0x0000ff00) >> 8;
