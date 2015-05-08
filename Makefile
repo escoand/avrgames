@@ -1,16 +1,12 @@
-# MCU name
+TARGET = avrgames
+SRC    = main.c io.c tetris.c
+OBJ    = $(SRC:.c=.o) $(ASRC:.S=.o)
+LST    = $(ASRC:.S=.lst) $(SRC:.c=.lst)
+
 MCU    = attiny85
-#MCU    = atmega8
 F_CPU  = 6400000UL
 
-# Output format. (can be srec, ihex, binary)
 FORMAT = ihex
-
-# Target file name (without extension).
-TARGET = game
-
-# List C source files here. (C dependencies are automatically generated.)
-SRC = main.c io.c tetris.c light_ws2812.c
 
 # Optimization level, can be [0, 1, 2, 3, s]. 
 # 0 = turn off optimization. s = optimize for size.
@@ -22,10 +18,6 @@ OPT = s
 # AVR (extended) COFF requires stabs, plus an avr-objcopy run.
 #DEBUG = stabs
 DEBUG = dwarf-2
-
-# List any extra directories to look for include files here.
-#     Each directory must be seperated by a space.
-EXTRAINCDIRS = 
 
 # Compiler flag to set the C Standard level.
 # c89   - "ANSI" C
@@ -53,10 +45,7 @@ CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
 CFLAGS += -Wall -Wstrict-prototypes
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
-CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
-
-#Additional libraries.
 
 # Minimalistic printf version
 PRINTF_LIB_MIN = -Wl,-u,vfprintf -lprintf_min
@@ -76,34 +65,17 @@ SCANF_LIB =
 
 MATH_LIB = -lm
 
-# External memory options
-
-# 64 KB of external RAM, starting after internal RAM (ATmega128!),
-# used for variables (.data/.bss) and heap (malloc()).
-#EXTMEMOPTS = -Wl,-Tdata=0x801100,--defsym=__heap_end=0x80ffff
-
-# 64 KB of external RAM, starting after internal RAM (ATmega128!),
-# only used for heap (malloc()).
-#EXTMEMOPTS = -Wl,--defsym=__heap_start=0x801100,--defsym=__heap_end=0x80ffff
-
-EXTMEMOPTS =
-
 # Linker flags.
 #  -Wl,...:     tell GCC to pass this to linker.
 #    -Map:      create map file
 #    --cref:    add cross reference to  map file
 LDFLAGS = -Wl,-Map=$(TARGET).map,--cref
-LDFLAGS += $(EXTMEMOPTS)
 LDFLAGS += $(PRINTF_LIB) $(SCANF_LIB) $(MATH_LIB)
 
 # Programming support using avrdude. Settings and variables.
 
-# Programming hardware: alf avr910 avrisp bascom bsd 
-# dt006 pavr picoweb pony-stk200 sp12 stk200 stk500
-#
 # Type: avrdude -c ?
 # to get a full listing.
-#
 AVRDUDE_PROGRAMMER = avrispmkII
 
 # com1 = serial port. Use lpt1 to connect to parallel port.
@@ -131,16 +103,6 @@ AVRDUDE_FLAGS += $(AVRDUDE_NO_VERIFY)
 AVRDUDE_FLAGS += $(AVRDUDE_VERBOSE)
 AVRDUDE_FLAGS += $(AVRDUDE_ERASE_COUNTER)
 
-# ---------------------------------------------------------------------------
-
-# Define directories, if needed.
-DIRAVR = c:/winavr
-DIRAVRBIN = $(DIRAVR)/bin
-DIRAVRUTILS = $(DIRAVR)/utils/bin
-DIRINC = .
-DIRLIB = $(DIRAVR)/avr/lib
-
-
 # Define programs and commands.
 SHELL = sh
 CC = avr-gcc
@@ -152,83 +114,37 @@ AVRDUDE = avrdude
 REMOVE = rm -f
 COPY = cp
 
-# Define all object files.
-OBJ = $(SRC:.c=.o) $(ASRC:.S=.o) 
-
-# Define all listing files.
-LST = $(ASRC:.S=.lst) $(SRC:.c=.lst)
-
-# Compiler flags to generate dependency files.
-### GENDEPFLAGS = -Wp,-M,-MP,-MT,$(*F).o,-MF,.dep/$(@F).d
-GENDEPFLAGS = -MD -MP -MF .dep/$(@F).d
-
 # Combine all necessary flags and optional flags.
 # Add target processor to flags.
-ALL_CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -I. $(CFLAGS) $(GENDEPFLAGS)
+ALL_CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) $(CFLAGS)
 ALL_ASFLAGS = -mmcu=$(MCU) -I. -x assembler-with-cpp $(ASFLAGS)
 
 # Default target.
-all: sizebefore build sizeafter end
-
-build: elf hex eep lss sym
-
-elf: $(TARGET).elf
-hex: $(TARGET).hex
-eep: $(TARGET).eep
-lss: $(TARGET).lss 
-sym: $(TARGET).sym
-
-# Display size of file.
-HEXSIZE = $(SIZE) --target=$(FORMAT) $(TARGET).hex
-ELFSIZE = $(SIZE) -A $(TARGET).elf
-sizebefore:
-	@if [ -f $(TARGET).elf ]; then echo; echo before; $(ELFSIZE); echo; fi
-
-sizeafter:
-	@if [ -f $(TARGET).elf ]; then echo; echo after; $(ELFSIZE); echo; fi
+all: $(TARGET).hex $(TARGET).eep
 
 # Program the device.  
 program: $(TARGET).hex $(TARGET).eep
 	$(AVRDUDE) $(AVRDUDE_FLAGS) $(AVRDUDE_WRITE_FLASH) $(AVRDUDE_WRITE_EEPROM)
 
-# Convert ELF to COFF for use in debugging / simulating in AVR Studio or VMLAB.
-COFFCONVERT=$(OBJCOPY) --debugging \
---change-section-address .data-0x800000 \
---change-section-address .bss-0x800000 \
---change-section-address .noinit-0x800000 \
---change-section-address .eeprom-0x810000 
-
-
-coff: $(TARGET).elf
-	$(COFFCONVERT) -O coff-avr $< $(TARGET).cof
-
-extcoff: $(TARGET).elf
-	$(COFFCONVERT) -O coff-ext-avr $< $(TARGET).cof
-
-# Create final output files (.hex, .eep) from ELF output file.
-%.hex: %.elf
+# Create final output files (.hex, .eep) from O output file.
+$(TARGET).hex: $(TARGET).elf
 	$(OBJCOPY) -O $(FORMAT) -R .eeprom $< $@
 
-%.eep: %.elf
+$(TARGET).eep: $(TARGET).elf
 	-$(OBJCOPY) -j .eeprom --set-section-flags=.eeprom="alloc,load" \
 	--change-section-lma .eeprom=0 -O $(FORMAT) $< $@
 
-# Create extended listing file from ELF output file.
-%.lss: %.elf
+# Create extended listing file from O output file.
+$(TARGET).lss: $(TARGET).elf
 	$(OBJDUMP) -h -S $< > $@
 
-# Create a symbol table from ELF output file.
-%.sym: %.elf
+# Create a symbol table from O output file.
+$(TARGET).sym: $(TARGET).elf
 	$(NM) -n $< > $@
 
-
-
-# Link: create ELF output file from object files.
-.SECONDARY : $(TARGET).elf
-.PRECIOUS : $(OBJ)
-%.elf: $(OBJ)
+# Link: create O output file from object files.
+$(TARGET).elf: $(OBJ)
 	$(CC) $(ALL_CFLAGS) $(OBJ) --output $@ $(LDFLAGS)
-
 
 # Compile: create object files from C source files.
 %.o : %.c
@@ -243,31 +159,8 @@ extcoff: $(TARGET).elf
 	$(CC) -c $(ALL_ASFLAGS) $< -o $@
 
 # Target: clean project.
-clean: clean_list end
-
-clean_list :
-	$(REMOVE) $(TARGET).hex
-	$(REMOVE) $(TARGET).eep
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).cof
-	$(REMOVE) $(TARGET).elf
-	$(REMOVE) $(TARGET).map
-	$(REMOVE) $(TARGET).obj
-	$(REMOVE) $(TARGET).a90
-	$(REMOVE) $(TARGET).sym
-	$(REMOVE) $(TARGET).lnk
-	$(REMOVE) $(TARGET).lss
-	$(REMOVE) $(OBJ)
-	$(REMOVE) $(LST)
-	$(REMOVE) $(SRC:.c=.s)
-	$(REMOVE) $(SRC:.c=.d)
-	$(REMOVE) .dep/*
-
-# Include the dependency files.
--include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+clean:
+	$(REMOVE) *.eep *.elf *.hex *.o *.map *.a90 *.sym *.lnk *.lss *.lst *.s *.d
 
 # Listing of phony targets.
-.PHONY : all begin finish end sizebefore sizeafter gccversion \
-build elf hex eep lss sym coff extcoff \
-clean clean_list program
-
+.PHONY : all $(TARGET).elf $(TARGET).hex $(TARGET).eep $(TARGET).lss $(TARGET).sym clean program
