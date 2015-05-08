@@ -207,7 +207,7 @@ output (board_matrix * board)
 #elif BOARD_STRIPE_MODE == 3
       y = abs ((x % 2 ? 0 : BOARD_HEIGHT - 1) - i % BOARD_HEIGHT);
 #endif
-      z = 3 * (i % BOARD_MAX_OUTPUT);
+      z = 3 * (i % BOARD_OUTPUT_BLOCK);
 
       bytes[z + 0] = (output_colors[(*board)[y][x]] & 0x00ff00) >> 8;
       bytes[z + 1] = (output_colors[(*board)[y][x]] & 0xff0000) >> 16;
@@ -215,7 +215,7 @@ output (board_matrix * board)
 
 /* write bytes */
       if (z == 0)
-	ws2818_bytes (bytes, i, BOARD_MAX_OUTPUT, maskhi, masklo);
+	ws2818_bytes (bytes, i, BOARD_OUTPUT_BLOCK, maskhi, masklo);
     }
 
   SREG = prev;
