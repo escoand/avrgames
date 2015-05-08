@@ -281,7 +281,6 @@ tetris_main (void)
     {
 
 #ifdef __AVR__
-      ms_sleep (tick);
       action = NONE;
 #else
       switch (getKey ())
