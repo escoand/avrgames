@@ -27,17 +27,10 @@
 #define OUTPUT_BLOCK_SIZE    (2 * BOARD_HEIGHT)
 
 
-#ifdef __AVR__
-#define BUTTON_LEFT          1
-#define BUTTON_RIGHT         2
-#define BUTTON_UP            3
-#define BUTTON_DOWN          4
-#else
 #define BUTTON_LEFT          'a'
 #define BUTTON_RIGHT         'd'
 #define BUTTON_UP            'q'
 #define BUTTON_DOWN          'e'
-#endif
 
 
 #define CONCAT_RAW(a, b, c)  a ## b ## c
