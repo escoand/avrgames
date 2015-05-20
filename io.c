@@ -78,18 +78,33 @@
 #endif
 
 
-uint32_t output_colors[] = {
 #ifdef __AVR__
+uint32_t output_colors[] = {
   0x000000, 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff
-#else
-  0x20, 0x23, 0x24, 0x26, 0x3d, 0x40, 0x4f
-#endif
 };
+
+uint8_t maskhi, masklo;
+#else
+uint32_t output_colors[] = {
+  0x20, 0x23, 0x24, 0x26, 0x3d, 0x40, 0x4f
+};
+#endif
 
 void
 initOutput (void)
 {
 #ifdef __AVR__
+
+  /* set direction */
+  DDRREG_STRIPE |= _BV (PINBIT_STRIPE);
+  DDRREG_LEFT |= _BV (PINBIT_LEFT);
+  DDRREG_RIGHT |= _BV (PINBIT_RIGHT);
+  DDRREG_UP |= _BV (PINBIT_UP);
+  DDRREG_DOWN |= _BV (PINBIT_DOWN);
+
+  maskhi = _BV (PINBIT_STRIPE);
+  masklo = ~maskhi & PORTREG_STRIPE;
+  maskhi |= PORTREG_STRIPE;
 #elif _WIN32
   DWORD mode;
   HANDLE hstdin;
@@ -184,14 +199,9 @@ output (board_matrix * board)
   uint16_t x, y;
 
 #ifdef __AVR__
-  uint8_t maskhi, masklo;
   uint16_t prev, z;
   uint8_t bytes[OUTPUT_BLOCK_SIZE * 3];
 
-  DDRREG_STRIPE |= _BV (PIN_STRIPE);
-  maskhi = _BV (PIN_STRIPE);
-  masklo = ~maskhi & PORTREG_STRIPE;
-  maskhi |= PORTREG_STRIPE;
   prev = SREG;
   cli ();
 
@@ -221,6 +231,7 @@ output (board_matrix * board)
   SREG = prev;
   _delay_us (50);
 
+  sei ();
 #else
 #if _WIN32
   system ("cls");
@@ -244,11 +255,19 @@ output (board_matrix * board)
 }
 
 uint8_t
-getKey (void)
+getButton (void)
 {
-  uint8_t key = 0;
+  uint8_t button = 0;
 
 #ifdef __AVR__
+  if (bit_is_set (PORTREG_LEFT, PINBIT_LEFT))
+    button = BUTTON_LEFT;
+  else if (bit_is_set (PORTREG_RIGHT, PINBIT_RIGHT))
+    button = BUTTON_RIGHT;
+  else if (bit_is_set (PORTREG_UP, PINBIT_UP))
+    button = BUTTON_UP;
+  else if (bit_is_set (PORTREG_DOWN, PINBIT_DOWN))
+    button = BUTTON_DOWN;
 #else
   uint8_t buf[128];
   uint8_t len;
@@ -268,9 +287,9 @@ getKey (void)
 #endif
     {
       len = read (STDIN_FILENO, buf, sizeof (buf) - 1);
-      key = buf[len - 1];
+      button = buf[len - 1];
     }
 #endif
 
-  return key;
+  return button;
 }
