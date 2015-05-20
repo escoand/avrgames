@@ -201,7 +201,7 @@ fullLines (void)
 }
 
 uint8_t
-nextStep ()
+nextStep (void)
 {
   /* new brick */
   if (offset_y >= BOARD_HEIGHT)
@@ -271,7 +271,7 @@ nextStep ()
 	  fullLines ();
 	  offset_x = INT16_MAX;
 	  offset_y = INT16_MAX;
-	  return nextStep (0);
+	  return nextStep ();
 	}
     }
 
