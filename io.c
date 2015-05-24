@@ -251,7 +251,7 @@ output (board_matrix * board)
       printf ("| ");
       for (x = 0; x < BOARD_WIDTH; x++)
 	{
-	  printf ("%c ", output_colors[board[y][x]]);
+	  printf ("%c ", output_colors[(*board)[y][x]]);
 	}
       printf ("|\n");
     }
