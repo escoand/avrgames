@@ -8,16 +8,16 @@
 #define PIN_STRIPE           2
 
 #define PORT_LEFT            B
-#define PIN_LEFT             3
+#define PIN_LEFT             4
 
 #define PORT_RIGHT           B
-#define PIN_RIGHT            4
+#define PIN_RIGHT            0
 
 #define PORT_UP              B
 #define PIN_UP               1
 
 #define PORT_DOWN            B
-#define PIN_DOWN             0
+#define PIN_DOWN             3
 
 #define BOARD_WIDTH          10
 #define BOARD_HEIGHT         18
