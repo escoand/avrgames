@@ -97,10 +97,16 @@ initOutput (void)
 
   /* set direction */
   DDRREG_STRIPE |= _BV (PINBIT_STRIPE);
-  DDRREG_LEFT |= _BV (PINBIT_LEFT);
-  DDRREG_RIGHT |= _BV (PINBIT_RIGHT);
-  DDRREG_UP |= _BV (PINBIT_UP);
-  DDRREG_DOWN |= _BV (PINBIT_DOWN);
+  DDRREG_LEFT &= ~(_BV (PINBIT_LEFT));
+  DDRREG_RIGHT &= ~(_BV (PINBIT_RIGHT));
+  DDRREG_UP &= ~(_BV (PINBIT_UP));
+  DDRREG_DOWN &= ~(_BV (PINBIT_DOWN));
+
+  /* activate pull-ups */
+  PORTREG_LEFT |= _BV (PINBIT_LEFT);
+  PORTREG_RIGHT |= _BV (PINBIT_RIGHT);
+  PORTREG_UP |= _BV (PINBIT_UP);
+  PORTREG_DOWN |= _BV (PINBIT_DOWN);
 
   maskhi = _BV (PINBIT_STRIPE);
   masklo = ~maskhi & PORTREG_STRIPE;
@@ -260,13 +266,13 @@ getButton (void)
   uint8_t button = 0;
 
 #ifdef __AVR__
-  if (bit_is_set (PORTREG_LEFT, PINBIT_LEFT))
+  if (bit_is_clear (PINREG_LEFT, PINBIT_LEFT))
     button = BUTTON_LEFT;
-  else if (bit_is_set (PORTREG_RIGHT, PINBIT_RIGHT))
+  else if (bit_is_clear (PINREG_RIGHT, PINBIT_RIGHT))
     button = BUTTON_RIGHT;
-  else if (bit_is_set (PORTREG_UP, PINBIT_UP))
+  else if (bit_is_clear (PINREG_UP, PINBIT_UP))
     button = BUTTON_UP;
-  else if (bit_is_set (PORTREG_DOWN, PINBIT_DOWN))
+  else if (bit_is_clear (PINREG_DOWN, PINBIT_DOWN))
     button = BUTTON_DOWN;
 #else
   uint8_t buf[128];
