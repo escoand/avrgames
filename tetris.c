@@ -165,39 +165,47 @@ insertBrick (int16_t _offset_x, int16_t _offset_y, enum tetris_actions action)
 void
 fullLines (void)
 {
-  int16_t y, z;
-  uint8_t x, blk[BOARD_HEIGHT][BOARD_WIDTH], dst[BOARD_HEIGHT][BOARD_WIDTH];
+  uint8_t x, tmp[BOARD_HEIGHT][BOARD_WIDTH];
+  int16_t y;
+  uint8_t a, b;
 
-  z = BOARD_HEIGHT - 1;
-  memset (blk, 0, sizeof (blk));
-  memset (dst, 0, sizeof (dst));
-
-  /* search full lines */
-  for (y = BOARD_HEIGHT - 1; y >= 0; y--)
+  /* copy non full lines */
+  memcpy (tmp, board, sizeof (board));
+  b = 0;
+  for (y = 0; y < BOARD_HEIGHT; y++)
+  {
+    a = UINT8_MAX;
     for (x = 0; x < BOARD_WIDTH; x++)
-      if (board[y][x] == 0)
-	{
-	  memcpy (blk[y], board[y], sizeof (blk[y]));
-	  memcpy (dst[z], board[y], sizeof (dst[z]));
-	  z--;
-	  break;
-	}
+      a = a && board[y][x];
+    if(a != 0) {
+      memset(tmp[y], 0, sizeof(tmp[y]));
+      b++;
+    }
+  }
 
-  /* nothing found */
-  if (z < 0)
+  if (b == 0)
     return;
 
   /* blink */
-  for (z = 0; z < 3; z++)
+  for (a = 0; a < 3; a++)
     {
-      output (&board);
+      output (&tmp);
       ms_sleep (tick);
-      output (&blk);
+      output (&board);
       ms_sleep (tick);
     }
 
-  /* remove lines */
-  memcpy (board, dst, sizeof (board));
+  /* remove full lines */
+  memset (board, 0, sizeof (board));
+  b = BOARD_HEIGHT - 1;
+  for (y = BOARD_HEIGHT - 1; y >= 0; y--)
+  {
+    a = 0;
+    for (x = 0; x < BOARD_WIDTH; x++)
+      a = a || tmp[y][x];
+    if(a != 0)
+      memcpy(board[b--], tmp[y], sizeof(board[y]));
+  }
 }
 
 uint8_t
