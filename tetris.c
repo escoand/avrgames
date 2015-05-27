@@ -209,7 +209,6 @@ nextStep (void)
       uint8_t x, y;
       uint8_t rand_brick = rand () % (sizeof (bricks) / sizeof (bricks[0]));
       uint8_t rand_color = rand () % OUTPUT_COLORS_COUNT + 1;
-      // TODO: real random for windows
 
       offset_x = (BOARD_WIDTH - TETRIS_BRICK_SIZE) / 2;
       offset_y = -TETRIS_BRICK_SIZE + 1;
@@ -281,6 +280,19 @@ nextStep (void)
 int
 tetris_main (void)
 {
+#ifdef __AVR__
+   uint8_t seed = 0;
+   uint8_t *p = (uint8_t*) (RAMEND+1);
+   extern uint8_t __heap_start;
+    
+   while (p >= &__heap_start + 1)
+      seed ^= * (--p);
+
+   srand(seed);
+#else
+  srand((unsigned)time(NULL));
+#endif
+
   memset (board, 0, sizeof (board));
 
   initOutput ();
