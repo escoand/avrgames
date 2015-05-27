@@ -100,7 +100,7 @@ uint8_t brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t offset_x = INT16_MAX;
 int16_t offset_y = INT16_MAX;
 
-uint16_t tick = 200;
+uint16_t tick = 300;
 
 uint8_t
 insertBrick (int16_t _offset_x, int16_t _offset_y, enum tetris_actions action)
