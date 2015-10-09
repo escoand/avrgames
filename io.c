@@ -18,6 +18,19 @@
 #endif
 
 
+#ifdef __AVR__
+#if BOARD_STRIPE_MODE == 0
+#define _Y(i) (i % BOARD_HEIGHT)
+#elif BOARD_STRIPE_MODE == 1
+#define _Y(i) (BOARD_HEIGHT - (i % BOARD_HEIGHT) - 1)
+#elif BOARD_STRIPE_MODE == 2
+#define _Y(i) (abs ((i % 2 ? BOARD_HEIGHT - 1 : 0) - i % BOARD_HEIGHT))
+#elif BOARD_STRIPE_MODE == 3
+#define _Y(i) (abs ((i % 2 ? 0 : BOARD_HEIGHT - 1) - i % BOARD_HEIGHT))
+#endif
+#endif
+
+
 /* ported from https://github.com/cpldcpu/light_ws2812 */
 #ifdef __AVR__
 // Timing in ns
@@ -130,15 +143,18 @@ initOutput (void)
 /* ported from https://github.com/cpldcpu/light_ws2812 */
 #ifdef __AVR__
 void
-ws2818_bytes (const uint8_t * bytes, const uint8_t skip, const uint8_t len,
-	      const uint8_t maskhi, const uint8_t masklo)
+ws2818_bytes (board_matrix * board)
 {
   uint8_t ctr, cur;
 
   // TODO: better skip mechanism
-  for (int16_t i = -skip * 3; i < len * 3; i++)
+  for (int16_t i = BOARD_HEIGHT * BOARD_WIDTH - 1; i >= 0; i--)
     {
-      cur = i < 0 ? 0 : bytes[i];
+      switch(i % 3) {
+        case 0: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0x00ff00) >> 8;
+        case 1: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0xff0000) >> 16;
+        case 2: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0x0000ff) >> 0;
+      }
 
       asm volatile ("       ldi   %0,8  \n\t" "loop%=:            \n\t" "       out   %2,%3 \n\t"	//  '1' [01] '0' [01] - re
 #if (w1_nops&1)
@@ -202,43 +218,21 @@ ws2818_bytes (const uint8_t * bytes, const uint8_t skip, const uint8_t len,
 void
 output (board_matrix * board)
 {
-  uint16_t x, y;
-
 #ifdef __AVR__
-  uint16_t prev, z;
-  uint8_t bytes[OUTPUT_BLOCK_SIZE * 3];
+  uint16_t prev;
 
   prev = SREG;
   cli ();
 
-  for (int16_t i = BOARD_HEIGHT * BOARD_WIDTH - 1; i >= 0; i--)
-    {
-      x = i / BOARD_HEIGHT;
-#if BOARD_STRIPE_MODE == 0
-      y = i % BOARD_HEIGHT;
-#elif BOARD_STRIPE_MODE == 1
-      y = BOARD_HEIGHT - (i % BOARD_HEIGHT) - 1;
-#elif BOARD_STRIPE_MODE == 2
-      y = abs ((x % 2 ? BOARD_HEIGHT - 1 : 0) - i % BOARD_HEIGHT);
-#elif BOARD_STRIPE_MODE == 3
-      y = abs ((x % 2 ? 0 : BOARD_HEIGHT - 1) - i % BOARD_HEIGHT);
-#endif
-      z = 3 * (i % OUTPUT_BLOCK_SIZE);
-
-      bytes[z + 0] = (output_colors[(*board)[y][x]] & 0x00ff00) >> 8;
-      bytes[z + 1] = (output_colors[(*board)[y][x]] & 0xff0000) >> 16;
-      bytes[z + 2] = (output_colors[(*board)[y][x]] & 0x0000ff) >> 0;
-
-/* write bytes */
-      if (z == 0)
-	ws2818_bytes (bytes, i, OUTPUT_BLOCK_SIZE, maskhi, masklo);
-    }
+  ws2818_bytes (&board);
 
   SREG = prev;
   _delay_us (50);
 
   sei ();
 #else
+  uint16_t x, y;
+
 #if _WIN32
   system ("cls");
 #else
