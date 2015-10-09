@@ -147,13 +147,12 @@ ws2818_bytes (board_matrix * board)
 {
   uint8_t ctr, cur;
 
-  // TODO: better skip mechanism
-  for (int16_t i = BOARD_HEIGHT * BOARD_WIDTH - 1; i >= 0; i--)
+  for (int16_t i = BOARD_HEIGHT * BOARD_WIDTH * 3 - 1; i >= 0; i--)
     {
       switch(i % 3) {
-        case 0: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0x00ff00) >> 8;
-        case 1: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0xff0000) >> 16;
-        case 2: cur = (output_colors[(*board)[_Y(i)][int (i / BOARD_HEIGHT)]] & 0x0000ff) >> 0;
+        case 0: cur = (output_colors[(*board)[_Y(i)][i / BOARD_HEIGHT]] & 0x00ff00) >> 8;
+        case 1: cur = (output_colors[(*board)[_Y(i)][i / BOARD_HEIGHT]] & 0xff0000) >> 16;
+        case 2: cur = (output_colors[(*board)[_Y(i)][i / BOARD_HEIGHT]] & 0x0000ff) >> 0;
       }
 
       asm volatile ("       ldi   %0,8  \n\t" "loop%=:            \n\t" "       out   %2,%3 \n\t"	//  '1' [01] '0' [01] - re
