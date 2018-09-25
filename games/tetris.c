@@ -1,6 +1,10 @@
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include "io.h"
+#include <time.h>
+
+#include "../input/input.h"
+#include "../output/output.h"
 #include "tetris.h"
 
 #ifdef __AVR__
@@ -189,9 +193,9 @@ fullLines (void)
   /* blink */
   for (a = 0; a < 3; a++)
     {
-      output (&tmp);
+      setOutput (&tmp);
       ms_sleep (tick);
-      output (&board);
+      setOutput (&board);
       ms_sleep (tick);
     }
 
@@ -233,13 +237,13 @@ nextStep (void)
   /* move brick */
   else
     {
-      uint8_t button = getButton ();
+      uint8_t button = getInput ();
 
       insertBrick (offset_x, offset_y, ACTION_REVERSE);
       offset_y++;
 
       /* move left */
-      if (button == BUTTON_LEFT
+      if (button & BUTTON_LEFT
 	  && insertBrick (offset_x - 1, offset_y, ACTION_NONE))
 	{
 	  offset_x--;
@@ -247,7 +251,7 @@ nextStep (void)
 	}
 
       /* move right */
-      else if (button == BUTTON_RIGHT
+      else if (button & BUTTON_RIGHT
 	       && insertBrick (offset_x + 1, offset_y, ACTION_NONE))
 	{
 	  offset_x++;
@@ -255,12 +259,12 @@ nextStep (void)
 	}
 
       /* rotate left */
-      else if (button == BUTTON_UP
+      else if (button & BUTTON_UP
 	       && insertBrick (offset_x, offset_y, ACTION_ROTATE_LEFT))
 	return 1;
 
       /* rotate right */
-      else if (button == BUTTON_DOWN
+      else if (button & BUTTON_DOWN
 	       && insertBrick (offset_x, offset_y, ACTION_ROTATE_RIGHT))
 	return 1;
 
@@ -289,20 +293,21 @@ int
 tetris_main (void)
 {
 #ifdef __AVR__
-   uint8_t seed = 0;
-   uint8_t *p = (uint8_t*) (RAMEND+1);
-   extern uint8_t __heap_start;
+  uint8_t seed = 0;
+  uint8_t *p = (uint8_t*) (RAMEND+1);
+  extern uint8_t __heap_start;
     
-   while (p >= &__heap_start + 1)
-      seed ^= * (--p);
+  while (p >= &__heap_start + 1)
+    seed ^= * (--p);
 
-   srand(seed);
+  srand(seed);
 #else
   srand((unsigned)time(NULL));
 #endif
 
   memset (board, 0, sizeof (board));
 
+  initInput ();
   initOutput ();
 
   while (1)
@@ -310,9 +315,11 @@ tetris_main (void)
       if (!nextStep ())
 	return 1;
 
-      output (&board);
+      setOutput (&board);
       ms_sleep (tick);
     }
+
+  clearOutput ();
 
   return 0;
 }

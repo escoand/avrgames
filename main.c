@@ -1,7 +1,8 @@
 #ifdef __AVR__
 #include <avr/io.h>
 #endif
-#include "tetris.h"
+#include "games/menu.h"
+#include "games/tetris.h"
 
 int
 main (void)
@@ -10,5 +11,5 @@ main (void)
   CLKPR = _BV (CLKPCE);
   CLKPR = 0;
 #endif
-  return tetris_main ();
+  return menu_main ();
 }

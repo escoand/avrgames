@@ -1,8 +1,7 @@
-#ifndef OUTPUT_H_
-#define OUTPUT_H_
+#ifndef INPUT_GPIO_H_
+#define INPUT_GPIO_H_
 
-#include <inttypes.h>
-
+#ifdef __AVR__
 
 #define PORT_STRIPE          B
 #define PIN_STRIPE           2
@@ -19,24 +18,9 @@
 #define PORT_DOWN            B
 #define PIN_DOWN             3
 
-#define BOARD_WIDTH          10
-#define BOARD_HEIGHT         18
-#define BOARD_STRIPE_MODE    3	// 0=top-bottom 1=bottom-top 2=chain-from-top 3=chain-from-bottom
-
-#define OUTPUT_COLORS_COUNT  6
-#define OUTPUT_BLOCK_SIZE    (2 * BOARD_HEIGHT)
-
-
-#define BUTTON_LEFT          'a'
-#define BUTTON_RIGHT         'd'
-#define BUTTON_UP            'q'
-#define BUTTON_DOWN          'e'
-
-
 #define CONCAT_RAW(a, b, c)  a ## b ## c
 #define CONCAT2(a, b)        CONCAT_RAW(a, b, )
 #define CONCAT3(a, b, c)     CONCAT_RAW(a, b, c)
-
 
 #define DDRREG_STRIPE        CONCAT2(DDR, PORT_STRIPE)
 #define PORTREG_STRIPE       CONCAT2(PORT, PORT_STRIPE)
@@ -62,11 +46,7 @@
 #define PINREG_DOWN          CONCAT2(PIN, PORT_DOWN)
 #define PINBIT_DOWN          CONCAT3(P, PORT_DOWN, PIN_DOWN)
 
+#else
+#endif
 
-typedef uint8_t board_matrix[BOARD_HEIGHT][BOARD_WIDTH];
-
-void initOutput (void);
-void output (board_matrix * board);
-uint8_t getButton (void);
-
-#endif /* OUTPUT_H_ */
+#endif /* INPUT_GPIO_H_ */
