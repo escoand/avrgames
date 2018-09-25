@@ -14,6 +14,29 @@
 #include "qlock.h"
 
 
+int8_t qlockWords[19][BOARD_WIDTH * 2 + 1] = {
+  { QLOCK_WORD_PREFIX, -1 },
+  { QLOCK_WORD_BEFORE, -1 },
+  { QLOCK_WORD_AFTER, -1 },
+  { QLOCK_WORD_QUARTER, -1 },
+  { QLOCK_WORD_HALF, -1 },
+  { QLOCK_WORD_FORTYFIVE, -1 },
+  { QLOCK_WORD_OCLOCK, -1 },
+  { QLOCK_WORD_ONE, -1 },
+  { QLOCK_WORD_TWO, -1 },
+  { QLOCK_WORD_THREE, -1 },
+  { QLOCK_WORD_FOUR, -1 },
+  { QLOCK_WORD_FIVE, -1 },
+  { QLOCK_WORD_SIX, -1 },
+  { QLOCK_WORD_SEVEN, -1 },
+  { QLOCK_WORD_EIGHT, -1 },
+  { QLOCK_WORD_NINE, -1 },
+  { QLOCK_WORD_TEN, -1 },
+  { QLOCK_WORD_ELEVEN, -1 },
+  { QLOCK_WORD_TWELVE, -1 }
+};
+
+
 void
 setWord(board_matrix *board, int8_t *word) {
   for(int8_t i = 0; i < BOARD_WIDTH + 1; i += 2) {
@@ -26,28 +49,6 @@ setWord(board_matrix *board, int8_t *word) {
 void
 qlock_main (void)
 {
-  int8_t qlockWords[19][BOARD_WIDTH * 2 + 1] = {
-    { QLOCK_WORD_PREFIX, -1 },
-    { QLOCK_WORD_BEFORE, -1 },
-    { QLOCK_WORD_AFTER, -1 },
-    { QLOCK_WORD_QUARTER, -1 },
-    { QLOCK_WORD_HALF, -1 },
-    { QLOCK_WORD_FORTYFIVE, -1 },
-    { QLOCK_WORD_OCLOCK, -1 },
-    { QLOCK_WORD_ONE, -1 },
-    { QLOCK_WORD_TWO, -1 },
-    { QLOCK_WORD_THREE, -1 },
-    { QLOCK_WORD_FOUR, -1 },
-    { QLOCK_WORD_FIVE, -1 },
-    { QLOCK_WORD_SIX, -1 },
-    { QLOCK_WORD_SEVEN, -1 },
-    { QLOCK_WORD_EIGHT, -1 },
-    { QLOCK_WORD_NINE, -1 },
-    { QLOCK_WORD_TEN, -1 },
-    { QLOCK_WORD_ELEVEN, -1 },
-    { QLOCK_WORD_TWELVE, -1 }
-  };
-
   board_matrix board;
   uint8_t hours;
   uint16_t mins;
