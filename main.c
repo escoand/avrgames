@@ -7,6 +7,7 @@
 
 #include "input/input.h"
 #include "output/output.h"
+#include "games/clock.h"
 #include "games/qlock.h"
 #include "games/tetris.h"
 
@@ -66,7 +67,7 @@ main(void)
 	button = getInput();
 
 	if (button == BUTTON_UP)
-	    qlock_main();
+	    clock_main();
 	else if (button == BUTTON_LEFT)
 	    tetris_main();
 	else

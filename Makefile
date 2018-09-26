@@ -3,9 +3,9 @@ SRC     = main.c \
           input/terminal.c \
           output/gpio.c \
           games/tetris.c \
-          games/qlock.c
+          games/clock.c
 OBJ     = $(SRC:.c=.o)
-CFLAGS  = 
+CFLAGS  = -DDEBUG
 LDFLAGS = -Lrpi_ws281x -lws2811
 
 CC = gcc
@@ -24,7 +24,7 @@ libs:
 	scons -C rpi_ws281x
 
 .PHONY: clean
-clean: clean-libs
+clean:
 	$(REMOVE) *.o */*.o $(TARGET)
 
 .PHONY: clean-libs
