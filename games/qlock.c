@@ -13,7 +13,7 @@
 #include "../output/output.h"
 #include "qlock.h"
 
-int8_t          qlockWords[19][BOARD_WIDTH * 2 + 1] = {
+int8_t          qlockWords[][BOARD_WIDTH * 2 + 1] = {
     {QLOCK_WORD_PREFIX, -1}
     ,
     {QLOCK_WORD_BEFORE, -1}
