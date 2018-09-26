@@ -5,46 +5,42 @@
 
 #include "output.h"
 
-
-uint32_t output_colors[] = {
-  ' ', '#', '$', '&', '=', '@', 'O'
+uint32_t        output_colors[] = {
+    ' ', '#', '$', '&', '=', '@', 'O'
 };
 
-
 void
-initOutput (void)
+initOutput(void)
 {
 }
 
 void
-setOutput (board_matrix * board)
+setOutput(board_matrix * board)
 {
 #if _WIN32
-  system ("cls");
+    system("cls");
 #else
-  system ("clear");
+    system("clear");
 #endif
-  printf ("+---------------------+\n");
+    printf("+---------------------+\n");
 
-  for (uint8_t y = 0; y < BOARD_HEIGHT; y++)
-    {
-      printf ("| ");
-      for (uint8_t x = 0; x < BOARD_WIDTH; x++)
-	{
-	  printf ("%c ", output_colors[(*board)[y][x]]);
+    for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
+	printf("| ");
+	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
+	    printf("%c ", output_colors[(*board)[y][x]]);
 	}
-      printf ("|\n");
+	printf("|\n");
     }
 
-  printf ("+---------------------+\n");
+    printf("+---------------------+\n");
 }
 
 void
-clearOutput (void)
+clearOutput(void)
 {
 #if _WIN32
-  system ("cls");
+    system("cls");
 #else
-  system ("clear");
+    system("clear");
 #endif
 }

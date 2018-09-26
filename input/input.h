@@ -4,14 +4,14 @@
 #include <stdint.h>
 
 enum inputButton {
-  BUTTON_NONE    = 0,
-  BUTTON_LEFT    = 1,
-  BUTTON_RIGHT   = 2,
-  BUTTON_UP      = 4,
-  BUTTON_DOWN    = 8
+    BUTTON_NONE = 0,
+    BUTTON_LEFT = 1,
+    BUTTON_RIGHT = 2,
+    BUTTON_UP = 4,
+    BUTTON_DOWN = 8
 };
 
-void initInput (void);
-uint32_t getInput (void);
+void            initInput(void);
+uint32_t        getInput(void);
 
-#endif /* INPUT_H_ */
+#endif				/* INPUT_H_ */

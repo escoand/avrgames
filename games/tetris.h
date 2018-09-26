@@ -1,6 +1,6 @@
 #ifndef TETRIS_H_
 #define TETRIS_H_
 
-int tetris_main (void);
+int             tetris_main(void);
 
-#endif /* TETRIS_H_ */
+#endif				/* TETRIS_H_ */

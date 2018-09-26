@@ -30,3 +30,8 @@ clean: clean-libs
 .PHONY: clean-libs
 clean-libs:
 	scons -C rpi_ws281x --clean
+
+.PHONY: indent
+indent:
+	indent -orig *.c input/*.c input/*.h output/*.c output/*.h games/*.c games/*.h
+
