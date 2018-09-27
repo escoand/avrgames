@@ -1,13 +1,13 @@
 TARGET  = ledmatrix
 SRC     = main.c \
-          input/terminal.c \
+          input/device.c \
           output/gpio.c \
           games/loading.c \
           games/clock.c \
           games/tetris.c
 OBJ     = $(SRC:.c=.o)
 CFLAGS  = -Irpi_ws281x -DDEBUG
-LDFLAGS = -Lrpi_ws281x -lws2811
+LDFLAGS = -Lrpi_ws281x -lws2811 -lpthread
 
 CC      = gcc
 RM      = rm -f
