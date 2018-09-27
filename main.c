@@ -7,6 +7,7 @@
 
 #include "input/input.h"
 #include "output/output.h"
+#include "games/loading.h"
 #include "games/clock.h"
 #include "games/qlock.h"
 #include "games/tetris.h"
@@ -61,18 +62,24 @@ main(void)
 
     initInput();
     initOutput();
-    clock_main();
-    setOutput(&title);
 
+    // init device
+    while (clock_main() != CLOCK_RETURN_SUCCESS) {
+	loading_main();
+    }
+
+    // default sceen
     while (1) {
 	button = getInput();
 
 	if (button == BUTTON_UP)
-	    clock_main();
+	    1;
 	else if (button == BUTTON_LEFT)
 	    tetris_main();
-	else
+	else {
+	    clock_main();
 	    sleep(1);
+	}
     }
 
     clearOutput();

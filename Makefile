@@ -2,14 +2,16 @@ TARGET  = ledmatrix
 SRC     = main.c \
           input/terminal.c \
           output/gpio.c \
+          games/loading.c \
           games/clock.c \
           games/tetris.c
 OBJ     = $(SRC:.c=.o)
 CFLAGS  = -Irpi_ws281x -DDEBUG
 LDFLAGS = -Lrpi_ws281x -lws2811
 
-CC = gcc
-RM = rm -f
+CC      = gcc
+RM      = rm -f
+INSTALL = install -o root
 
 # default target
 all: libs $(TARGET) clear
@@ -24,6 +26,19 @@ $(TARGET): $(OBJ)
 
 clear: clear.o output/gpio.o
 	$(CC) -o $@ $^ $(LDFLAGS)
+
+# install
+.PHONY: install
+install: $(TARGET)
+	$(INSTALL) $< /usr/local/bin/
+	$(INSTALL) etc/$(TARGET).service /etc/systemd/system/
+	systemctl enable $(TARGET)
+
+# uninstall
+.PHONY: uninstall
+uninstall:
+	systemctl disable $(TARGET)
+	$(RM) /usr/local/bin/$(TARGET) /etc/systemd/system/$(TARGET).service
 
 # libs
 .PHONY: libs

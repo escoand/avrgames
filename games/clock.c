@@ -13,9 +13,6 @@
 #include "../output/output.h"
 #include "clock.h"
 
-#define CLOCK_DIGIT_WIDTH 3
-#define CLOCK_DIGIT_HEIGHT 5
-
 
 uint8_t         clockDigits[][CLOCK_DIGIT_HEIGHT][CLOCK_DIGIT_WIDTH] = {
     {
@@ -101,7 +98,7 @@ setDigit(board_matrix * board, uint8_t startX, uint8_t startY,
     }
 }
 
-void
+uint8_t
 clock_main(void)
 {
     board_matrix    board;
@@ -111,42 +108,43 @@ clock_main(void)
                     mins,
                     secs;
 
-    initOutput();
+    // check time
+    time(&rawtime);
+    timeinfo = localtime(&rawtime);
+    if (timeinfo->tm_year == 70)
+	return CLOCK_RETURN_FAILURE;
 
-    while (1) {
-	time(&rawtime);
-	timeinfo = localtime(&rawtime);
+    // get infos
 #if CLOCK_24_HOURS == 0
-	hours = (timeinfo->tm_hour % 12);
+    hours = (timeinfo->tm_hour % 12);
 #else
-	hours = timeinfo->tm_hour;
+    hours = timeinfo->tm_hour;
 #endif
-	mins = timeinfo->tm_min;
-	secs = timeinfo->tm_sec;
+    mins = timeinfo->tm_min;
+    secs = timeinfo->tm_sec;
 
+    // debug
 #ifdef DEBUG
-	printf("%02i:%02i:%02i -> ", timeinfo->tm_hour,
-	       timeinfo->tm_min, timeinfo->tm_sec);
-	printf("digits are %i %i %i %i\n", hours / 10, hours % 10,
-	       mins / 10, mins % 10);
+    printf("%02i:%02i:%02i -> ", timeinfo->tm_hour,
+	   timeinfo->tm_min, timeinfo->tm_sec);
+    printf("digits are %i %i %i %i\n", hours / 10, hours % 10,
+	   mins / 10, mins % 10);
 #endif
 
-	// clear
-	memset(&board, 0, sizeof(board));
+    // clear
+    memset(&board, 0, sizeof(board));
 
-	// digits
-	setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW1,
-		 clockDigits[hours / 10]);
-	setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW1,
-		 clockDigits[hours % 10]);
-	setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW2,
-		 clockDigits[mins / 10]);
-	setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW2,
-		 clockDigits[mins % 10]);
+    // digits
+    setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW1,
+	     clockDigits[hours / 10]);
+    setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW1,
+	     clockDigits[hours % 10]);
+    setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW2,
+	     clockDigits[mins / 10]);
+    setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW2,
+	     clockDigits[mins % 10]);
 
-	setOutput(&board);
-	sleep(60 - secs);
-    }
+    setOutput(&board);
 
-    clearOutput();
+    return CLOCK_RETURN_SUCCESS;
 }
