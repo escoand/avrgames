@@ -28,7 +28,7 @@ uint8_t         clockDigits[][CLOCK_DIGIT_HEIGHT][CLOCK_DIGIT_WIDTH] = {
     {
      {0, 0, 1},
      {0, 1, 1},
-     {1, 0, 1},
+     {0, 0, 1},
      {0, 0, 1},
      {0, 0, 1}
      },
@@ -47,11 +47,11 @@ uint8_t         clockDigits[][CLOCK_DIGIT_HEIGHT][CLOCK_DIGIT_WIDTH] = {
      {1, 1, 1}
      },
     {
-     {1, 0, 0},
-     {1, 0, 0},
+     {1, 0, 1},
+     {1, 0, 1},
      {1, 1, 1},
-     {0, 1, 0},
-     {0, 1, 0}
+     {0, 0, 1},
+     {0, 0, 1}
      },
     {
      {1, 1, 1},
@@ -70,9 +70,9 @@ uint8_t         clockDigits[][CLOCK_DIGIT_HEIGHT][CLOCK_DIGIT_WIDTH] = {
     {
      {1, 1, 1},
      {0, 0, 1},
-     {0, 1, 0},
-     {1, 0, 0},
-     {1, 0, 0}
+     {0, 0, 1},
+     {0, 0, 1},
+     {0, 0, 1}
      },
     {
      {1, 1, 1},
@@ -135,10 +135,14 @@ clock_main(void)
 	memset(&board, 0, sizeof(board));
 
 	// digits
-	setDigit(&board, 1, 2, clockDigits[hours / 10]);
-	setDigit(&board, 6, 2, clockDigits[hours % 10]);
-	setDigit(&board, 1, 11, clockDigits[mins / 10]);
-	setDigit(&board, 6, 11, clockDigits[mins % 10]);
+	setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW1,
+		 clockDigits[hours / 10]);
+	setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW1,
+		 clockDigits[hours % 10]);
+	setDigit(&board, CLOCK_DIGIT_COL1, CLOCK_DIGIT_ROW2,
+		 clockDigits[mins / 10]);
+	setDigit(&board, CLOCK_DIGIT_COL2, CLOCK_DIGIT_ROW2,
+		 clockDigits[mins % 10]);
 
 	setOutput(&board);
 	sleep(60 - secs);
