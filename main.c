@@ -61,6 +61,7 @@ main(void)
 
     initInput();
     initOutput();
+    clock_main();
     setOutput(&title);
 
     while (1) {
