@@ -5,18 +5,17 @@
 
 #include "output.h"
 #include "gpio.h"
-#include "../rpi_ws281x/ws2811.h"
 
 ws2811_t        ledstring = {
-    .freq = TARGET_FREQ,
-    .dmanum = DMA,
+    .freq = BOARD_STRIP_FREQ,
+    .dmanum = BOARD_STRIP_DMA,
     .channel = {
 		[0] = {
-		       .gpionum = GPIO_PIN,
+		       .gpionum = BOARD_STRIP_GPIO,
 		       .count = BOARD_WIDTH * BOARD_HEIGHT,
-		       .invert = 0,
-		       .brightness = 255,
-		       .strip_type = STRIP_TYPE,
+		       .invert = BOARD_STRIP_INVERT,
+		       .brightness = BOARD_STRIP_BRIGHTNESS,
+		       .strip_type = BOARD_STRIP_TYPE,
 		       }
 		}
     ,
@@ -43,21 +42,21 @@ setOutput(board_matrix * board)
     for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
 	for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
 
-#if BOARD_STRIPE_MODE == 0
+#if BOARD_STRIP_MODE == 0
 	    pos = (x * BOARD_HEIGHT) + y;
-#elif BOARD_STRIPE_MODE == 1
+#elif BOARD_STRIP_MODE == 1
 	    pos = (x * BOARD_HEIGHT) + (BOARD_HEIGHT - y);
-#elif BOARD_STRIPE_MODE == 2
+#elif BOARD_STRIP_MODE == 2
 	    pos =
 		(x * BOARD_HEIGHT) + (x % 2 ==
 				      0 ? BOARD_HEIGHT - y - 1 : y);
-#elif BOARD_STRIPE_MODE == 3
+#elif BOARD_STRIP_MODE == 3
 	    pos =
 		(x * BOARD_HEIGHT) + (x % 2 ==
 				      0 ? y : BOARD_HEIGHT - y - 1);
 #endif
 
-#if BOARD_STRIPE_REVERSE == 1
+#if BOARD_STRIP_REVERSE == 1
 	    pos = (BOARD_WIDTH * BOARD_HEIGHT) - pos - 1;
 #endif
 
@@ -77,7 +76,7 @@ clearOutput(void)
 {
     ws2811_return_t ret;
 
-    for (uint8_t i = 0; i < BOARD_WIDTH * BOARD_HEIGHT; i++) {
+    for (uint8_t i = 0; i < sizeof(ledstring.channel[0].leds); i++) {
 	ledstring.channel[0].leds[i] = output_colors[0];
     }
 
