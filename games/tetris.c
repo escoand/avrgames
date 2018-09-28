@@ -313,7 +313,7 @@ nextStep(void)
     return 0;
 }
 
-int
+void
 tetris_main(void)
 {
 #ifdef __AVR__
@@ -331,18 +331,13 @@ tetris_main(void)
 
     memset(board, 0, sizeof(board));
 
-    initInput();
-    initOutput();
-
     while (1) {
 	if (!nextStep())
-	    return 1;
+	    break;
 
 	setOutput(&board);
 	ms_sleep(tick);
     }
 
-    clearOutput();
-
-    return 0;
+    sleep(5);
 }

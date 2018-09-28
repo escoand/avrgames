@@ -4,10 +4,32 @@
 #include <unistd.h>
 
 #include "output.h"
+#include "terminal.h"
 
-uint32_t        output_colors[] = {
-    ' ', '#', '$', '&', '=', '@', 'O'
-};
+uint8_t         terminalChars[] = { TERMINAL_CHAR_MAPPING };
+
+
+void
+drawHorizontalBorder(void)
+{
+    putchar(TERMINAL_BORDER_EDGE);
+    for (uint8_t i = 0; i <= BOARD_WIDTH * 2; i++)
+	putchar(TERMINAL_BORDER_HORIZONTAL);
+    putchar(TERMINAL_BORDER_EDGE);
+    putchar('\n');
+}
+
+uint32_t
+getChar(uint32_t colorId)
+{
+    for (uint8_t i = 0; i < sizeof(terminalChars) / sizeof(uint8_t);
+	 i += 2) {
+	if (terminalChars[i] == colorId)
+	    return terminalChars[++i];
+    }
+    return TERMINAL_CHAR_NONE;
+}
+
 
 void
 initOutput(void)
@@ -17,22 +39,21 @@ initOutput(void)
 void
 setOutput(board_matrix * board)
 {
-#if _WIN32
-    system("cls");
-#else
-    system("clear");
-#endif
-    printf("+---------------------+\n");
+    clearOutput();
+    drawHorizontalBorder();
 
     for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
-	printf("| ");
+	putchar(TERMINAL_BORDER_VERTICAL);
+	putchar(' ');
 	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
-	    printf("%c ", output_colors[(*board)[y][x]]);
+	    putchar(getChar((*board)[y][x]));
+	    putchar(' ');
 	}
-	printf("|\n");
+	putchar(TERMINAL_BORDER_VERTICAL);
+	putchar('\n');
     }
 
-    printf("+---------------------+\n");
+    drawHorizontalBorder();
 }
 
 void

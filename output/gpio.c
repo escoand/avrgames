@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "output.h"
 #include "gpio.h"
 
+uint32_t        gpioColors[] = { GPIO_COLOR_MAPPING };
 ws2811_t        ledstring = {
     .freq = BOARD_STRIP_FREQ,
     .dmanum = BOARD_STRIP_DMA,
@@ -20,6 +20,18 @@ ws2811_t        ledstring = {
 		}
     ,
 };
+
+
+uint32_t
+getColor(uint32_t colorId)
+{
+    for (uint8_t i = 0; i < sizeof(gpioColors) / sizeof(uint32_t); i += 2) {
+	if (gpioColors[i] == colorId)
+	    return gpioColors[++i];
+    }
+    return GPIO_COLOR_NONE;
+}
+
 
 void
 initOutput(void)
@@ -49,18 +61,18 @@ setOutput(board_matrix * board)
 #elif BOARD_STRIP_MODE == 2
 	    pos =
 		(x * BOARD_HEIGHT) + (x % 2 ==
-				      0 ? BOARD_HEIGHT - y - 1 : y);
+				      0 ? y : BOARD_HEIGHT - y - 1);
 #elif BOARD_STRIP_MODE == 3
 	    pos =
 		(x * BOARD_HEIGHT) + (x % 2 ==
-				      0 ? y : BOARD_HEIGHT - y - 1);
+				      0 ? BOARD_HEIGHT - y - 1 : y);
 #endif
 
 #if BOARD_STRIP_REVERSE == 1
-	    pos = (BOARD_WIDTH * BOARD_HEIGHT) - pos - 1;
+	    pos = BOARD_WIDTH * BOARD_HEIGHT - pos - 1;
 #endif
 
-	    ledstring.channel[0].leds[pos] = output_colors[(*board)[y][x]];
+	    ledstring.channel[0].leds[pos] = getColor((*board)[y][x]);
 	}
     }
 
@@ -77,7 +89,7 @@ clearOutput(void)
     ws2811_return_t ret;
 
     for (uint8_t i = 0; i < sizeof(ledstring.channel[0].leds); i++) {
-	ledstring.channel[0].leds[i] = output_colors[0];
+	ledstring.channel[0].leds[i] = getColor(BOARD_COLOR_NONE);
     }
 
     if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {

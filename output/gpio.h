@@ -1,8 +1,8 @@
-#ifndef GPIO_H_
-#define GPIO_H_
+#ifndef OUTPUT_GPIO_H_
+#define OUTPUT_GPIO_H_
 
-#include <stdint.h>
 #include <ws2811.h>
+#include "output.h"
 
 /*
  * MODE:    - 0 -   - 1 -   - 2 -   - 3 -
@@ -13,16 +13,34 @@
  */
 
 #define BOARD_STRIP_MODE        3
-#define BOARD_STRIP_REVERSE     1
-#define BOARD_STRIP_BRIGHTNESS  128
+#define BOARD_STRIP_REVERSE     0
+
+#define BOARD_STRIP_BRIGHTNESS  255
 #define BOARD_STRIP_INVERT      0
 #define BOARD_STRIP_FREQ        WS2811_TARGET_FREQ
 #define BOARD_STRIP_GPIO        18
 #define BOARD_STRIP_DMA         10
-#define BOARD_STRIP_TYPE        WS2811_STRIP_GBR
+#define BOARD_STRIP_TYPE        WS2812_STRIP
 
-uint32_t        output_colors[] = {
-    0x000000, 0xff0000, 0x00ff00, 0x0000ff, 0xffff00, 0xff00ff, 0x00ffff
-};
 
-#endif				/* GPIO_H_ */
+#define GPIO_COLOR_FACTOR   0xAAAAAA
+
+#define GPIO_COLOR_NONE     0x0
+#define GPIO_COLOR_WHITE    0xFFFFFF & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_RED      0xFF0000 & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_GREEN    0x00FF00 & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_BLUE     0x0000FF & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_YELLOW   0xFFFF00 & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_PINK     0xFF00FF & GPIO_COLOR_FACTOR
+#define GPIO_COLOR_CYAN     0x00FFFF & GPIO_COLOR_FACTOR
+
+#define GPIO_COLOR_MAPPING  BOARD_COLOR_NONE,   GPIO_COLOR_NONE, \
+                            BOARD_COLOR_WHITE,  GPIO_COLOR_WHITE, \
+                            BOARD_COLOR_RED,    GPIO_COLOR_RED, \
+                            BOARD_COLOR_GREEN,  GPIO_COLOR_GREEN, \
+                            BOARD_COLOR_BLUE,   GPIO_COLOR_BLUE, \
+                            BOARD_COLOR_YELLOW, GPIO_COLOR_YELLOW, \
+                            BOARD_COLOR_PINK,   GPIO_COLOR_PINK, \
+                            BOARD_COLOR_CYAN,   GPIO_COLOR_CYAN
+
+#endif				/* OUTPUT_GPIO_H_ */

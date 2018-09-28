@@ -23,11 +23,11 @@ uint8_t         clockDigits[][CLOCK_DIGIT_HEIGHT][CLOCK_DIGIT_WIDTH] = {
      {1, 1, 1}
      },
     {
-     {0, 0, 1},
-     {0, 1, 1},
-     {0, 0, 1},
-     {0, 0, 1},
-     {0, 0, 1}
+     {0, 1, 0},
+     {1, 1, 0},
+     {0, 1, 0},
+     {0, 1, 0},
+     {1, 1, 1}
      },
     {
      {1, 1, 1},
@@ -93,7 +93,8 @@ setDigit(board_matrix * board, uint8_t startX, uint8_t startY,
 {
     for (uint8_t y = 0; y < CLOCK_DIGIT_HEIGHT; y++) {
 	for (uint8_t x = 0; x < CLOCK_DIGIT_WIDTH; x++) {
-	    (*board)[startY + y][startX + x] = digit[y][x];
+	    (*board)[startY + y][startX + x] =
+		digit[y][x] ? CLOCK_DIGIT_COLOR : 0;
 	}
     }
 }
@@ -111,8 +112,6 @@ clock_main(void)
     // check time
     time(&rawtime);
     timeinfo = localtime(&rawtime);
-    if (timeinfo->tm_year == 70)
-	return CLOCK_RETURN_FAILURE;
 
     // get infos
 #if CLOCK_24_HOURS == 0
@@ -125,11 +124,16 @@ clock_main(void)
 
     // debug
 #ifdef DEBUG
-    printf("%02i:%02i:%02i -> ", timeinfo->tm_hour,
+    printf("%04i-%02i-%02i %02i:%02i:%02i -> ", 1900 + timeinfo->tm_year,
+	   timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour,
 	   timeinfo->tm_min, timeinfo->tm_sec);
-    printf("digits are %i %i %i %i\n", hours / 10, hours % 10,
-	   mins / 10, mins % 10);
+    printf("digits are %i %i %i %i\n", hours / 10, hours % 10, mins / 10,
+	   mins % 10);
 #endif
+
+    // check if correct
+    if (timeinfo->tm_year < 100)
+	return CLOCK_RETURN_FAILURE;
 
     // clear
     memset(&board, 0, sizeof(board));
