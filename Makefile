@@ -3,6 +3,7 @@ SRC     = main.c \
           input/device.c \
           output/gpio.c \
           games/loading.c \
+          games/menu.c \
           games/clock.c \
           games/tetris.c
 OBJ     = $(SRC:.c=.o)

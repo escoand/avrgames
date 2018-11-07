@@ -8,7 +8,8 @@ enum inputButton {
     BUTTON_LEFT = 1,
     BUTTON_RIGHT = 2,
     BUTTON_UP = 4,
-    BUTTON_DOWN = 8
+    BUTTON_DOWN = 8,
+    BUTTON_MENU = 16
 };
 
 void            initInput(void);

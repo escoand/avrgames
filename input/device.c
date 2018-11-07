@@ -39,14 +39,14 @@ readEvents(char *name)
 	    if (keyMapping[i] == ev.code) {
 		lastButton = keyMapping[++i];
 #ifdef DEBUG
-		printf("input event code=%02X value=%0X is %0X\n", ev.code,
-		       ev.value, lastButton);
+		printf("input event code=0x%02X value=0x%0X is 0x%0X\n",
+		       ev.code, ev.value, lastButton);
 #endif
 		break;
 	    }
 	}
 #ifdef DEBUG
-	printf("input event code=%02X value=%0X\n", ev.code, ev.value);
+	printf("input event code=0x%02X value=0x%0X\n", ev.code, ev.value);
 #endif
     }
     fclose(fp);
