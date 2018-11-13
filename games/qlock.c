@@ -11,6 +11,7 @@
 #endif
 
 #include "../output/output.h"
+#include "../log.h"
 #include "qlock.h"
 
 int8_t          qlockWords[][BOARD_WIDTH * 2 + 1] = {
@@ -85,37 +86,25 @@ qlock_main(void)
 
 	// prefix
 	setWord(&board, qlockWords[0]);
-#if DEBUG
-	printf("%02i:%02i:%02i -> ", timeinfo->tm_hour,
-	       timeinfo->tm_min, timeinfo->tm_sec);
-#endif
 
 	// shortly before
 	if ((mins % 1500) > 730 && (mins % 1500) <= 1230) {
 	    setWord(&board, qlockWords[1]);
-#if DEBUG
-	    printf("shortly before ");
-#endif
+	    LOGD("shortly before ");
 	}
 	// shortly after
 	else if ((mins % 1500) > 230 && (mins % 1500) <= 730) {
 	    setWord(&board, qlockWords[2]);
-#if DEBUG
-	    printf("shortly after ");
-#endif
+	    LOGD("shortly after ");
 	}
 	// quarter
 	if (mins > 730 && mins <= 2230) {
 	    setWord(&board, qlockWords[3]);
 #if QLOCK_QUARTER_AFTER == 0
 	    hours++;
-#if DEBUG
-	    printf("quarter %i\n", hours);
-#endif
+	    LOGD("quarter %i2, hours);
 #else
-#if DEBUG
-	    printf("quarter past %i\n", hours);
-#endif
+	    LOGD("quarter past %i", hours);
 #endif
 	}
 	// half
@@ -123,13 +112,9 @@ qlock_main(void)
 	    setWord(&board, qlockWords[4]);
 #if QLOCK_HALF_AFTER == 0
 	    hours++;
-#if DEBUG
-	    printf("half to %i\n", hours);
-#endif
+	    LOGD("half to %i", hours);
 #else
-#if DEBUG
-	    printf("half past %i\n", hours);
-#endif
+	    LOGD("half past %i", hours);
 #endif
 	}
 	// forty-five
@@ -137,27 +122,19 @@ qlock_main(void)
 	    setWord(&board, qlockWords[5]);
 #if QLOCK_FORTYFIVE_AFTER == 0
 	    hours++;
-#if DEBUG
-	    printf("quarter to %i\n", hours);
-#endif
+	    LOGD("quarter to %i", hours);
 #else
-#if DEBUG
-	    printf("%i forty-five\n", hours);
-#endif
+	    LOGD("%i forty-five", hours);
 #endif
 	}
 	// o'clock
 	else if (mins > 5230) {
 	    setWord(&board, qlockWords[6]);
 	    hours++;
-#if DEBUG
-	    printf("%i o'clock\n", hours);
-#endif
+	    LOGD("%i o'clock", hours);
 	} else if (mins <= 730) {
 	    setWord(&board, qlockWords[6]);
-#if DEBUG
-	    printf("%i o'clock\n", hours);
-#endif
+	    LOGD("%i o'clock", hours);
 	}
 	// hours
 	setWord(&board, qlockWords[6 + hours]);

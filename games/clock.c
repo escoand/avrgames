@@ -11,6 +11,7 @@
 #endif
 
 #include "../output/output.h"
+#include "../log.h"
 #include "clock.h"
 
 
@@ -122,14 +123,8 @@ clock_main(void)
     mins = timeinfo->tm_min;
     secs = timeinfo->tm_sec;
 
-    // debug
-#ifdef DEBUG
-    printf("%04i-%02i-%02i %02i:%02i:%02i -> ", 1900 + timeinfo->tm_year,
-	   timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour,
-	   timeinfo->tm_min, timeinfo->tm_sec);
-    printf("digits are %i %i %i %i\n", hours / 10, hours % 10, mins / 10,
+    LOGD("digits are %i %i %i %i", hours / 10, hours % 10, mins / 10,
 	   mins % 10);
-#endif
 
     // check if correct
     if (timeinfo->tm_year < 100)
