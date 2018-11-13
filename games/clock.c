@@ -9,9 +9,9 @@
 #if DEBUG
 #include <stdio.h>
 #endif
+#include <log.h>
 
 #include "../output/output.h"
-#include "../log.h"
 #include "clock.h"
 
 
@@ -123,7 +123,7 @@ clock_main(void)
     mins = timeinfo->tm_min;
     secs = timeinfo->tm_sec;
 
-    LOGD("digits are %i %i %i %i", hours / 10, hours % 10, mins / 10,
+    log_debug("digits are %i %i %i %i", hours / 10, hours % 10, mins / 10,
 	   mins % 10);
 
     // check if correct
