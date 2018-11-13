@@ -1,5 +1,6 @@
 TARGET  = ledmatrix
 SRC     = main.c \
+          log.c \
           input/device.c \
           output/gpio.c \
           games/loading.c \
@@ -15,7 +16,7 @@ RM      = rm -f
 INSTALL = install -o root
 
 # default target
-all: libs $(TARGET) clear
+all: $(TARGET) clear
 
 # source
 %.o : %.c
