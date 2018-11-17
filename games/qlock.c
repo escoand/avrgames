@@ -9,9 +9,9 @@
 #if DEBUG
 #include <stdio.h>
 #endif
+#include <log.h>
 
 #include "../output/output.h"
-#include "../log.h"
 #include "qlock.h"
 
 int8_t          qlockWords[][BOARD_WIDTH * 2 + 1] = {
@@ -90,21 +90,21 @@ qlock_main(void)
 	// shortly before
 	if ((mins % 1500) > 730 && (mins % 1500) <= 1230) {
 	    setWord(&board, qlockWords[1]);
-	    LOGD("shortly before ");
+	    log_debug("shortly before ");
 	}
 	// shortly after
 	else if ((mins % 1500) > 230 && (mins % 1500) <= 730) {
 	    setWord(&board, qlockWords[2]);
-	    LOGD("shortly after ");
+	    log_debug("shortly after ");
 	}
 	// quarter
 	if (mins > 730 && mins <= 2230) {
 	    setWord(&board, qlockWords[3]);
 #if QLOCK_QUARTER_AFTER == 0
 	    hours++;
-	    LOGD("quarter %i2, hours);
+	    log_debug("quarter %i2, hours);
 #else
-	    LOGD("quarter past %i", hours);
+	    log_debug("quarter past %i", hours);
 #endif
 	}
 	// half
@@ -112,9 +112,9 @@ qlock_main(void)
 	    setWord(&board, qlockWords[4]);
 #if QLOCK_HALF_AFTER == 0
 	    hours++;
-	    LOGD("half to %i", hours);
+	    log_debug("half to %i", hours);
 #else
-	    LOGD("half past %i", hours);
+	    log_debug("half past %i", hours);
 #endif
 	}
 	// forty-five
@@ -122,19 +122,19 @@ qlock_main(void)
 	    setWord(&board, qlockWords[5]);
 #if QLOCK_FORTYFIVE_AFTER == 0
 	    hours++;
-	    LOGD("quarter to %i", hours);
+	    log_debug("quarter to %i", hours);
 #else
-	    LOGD("%i forty-five", hours);
+	    log_debug("%i forty-five", hours);
 #endif
 	}
 	// o'clock
 	else if (mins > 5230) {
 	    setWord(&board, qlockWords[6]);
 	    hours++;
-	    LOGD("%i o'clock", hours);
+	    log_debug("%i o'clock", hours);
 	} else if (mins <= 730) {
 	    setWord(&board, qlockWords[6]);
-	    LOGD("%i o'clock", hours);
+	    log_debug("%i o'clock", hours);
 	}
 	// hours
 	setWord(&board, qlockWords[6 + hours]);
