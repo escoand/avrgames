@@ -124,7 +124,7 @@ clock_main(void)
     secs = timeinfo->tm_sec;
 
     log_debug("digits are %i %i %i %i", hours / 10, hours % 10, mins / 10,
-	   mins % 10);
+	      mins % 10);
 
     // check if correct
     // if (timeinfo->tm_year < 100)

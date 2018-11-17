@@ -104,7 +104,7 @@ qlock_main(void)
 	    hours++;
 	    log_debug("quarter %i2, hours);
 #else
-	    log_debug("quarter past %i", hours);
+	    log_debug(" quarter past % i ", hours);
 #endif
 	}
 	// half
@@ -112,9 +112,9 @@ qlock_main(void)
 	    setWord(&board, qlockWords[4]);
 #if QLOCK_HALF_AFTER == 0
 	    hours++;
-	    log_debug("half to %i", hours);
+	    log_debug(" half to % i ", hours);
 #else
-	    log_debug("half past %i", hours);
+	    log_debug(" half past % i ", hours);
 #endif
 	}
 	// forty-five
@@ -122,19 +122,19 @@ qlock_main(void)
 	    setWord(&board, qlockWords[5]);
 #if QLOCK_FORTYFIVE_AFTER == 0
 	    hours++;
-	    log_debug("quarter to %i", hours);
+	    log_debug(" quarter to % i ", hours);
 #else
-	    log_debug("%i forty-five", hours);
+	    log_debug(" % i forty - five ", hours);
 #endif
 	}
 	// o'clock
 	else if (mins > 5230) {
 	    setWord(&board, qlockWords[6]);
 	    hours++;
-	    log_debug("%i o'clock", hours);
+	    log_debug(" % i o 'clock", hours);
 	} else if (mins <= 730) {
 	    setWord(&board, qlockWords[6]);
-	    log_debug("%i o'clock", hours);
+	    log_debug("%i o' clock ", hours);
 	}
 	// hours
 	setWord(&board, qlockWords[6 + hours]);
@@ -145,3 +145,4 @@ qlock_main(void)
 
     clearOutput();
 }
+

@@ -1,15 +1,17 @@
 TARGET  = ledmatrix
 SRC     = main.c \
           input/device.c \
-          output/gpio.c \
+          output/terminal.c \
           games/loading.c \
           games/menu.c \
           games/clock.c \
           games/tetris.c \
-          log.c/log.c
+          games/fire.c \
+          log.c/src/log.c
 OBJ     = $(SRC:.c=.o)
-CFLAGS  = -Irpi_ws281x -Ilog.c -DLOG_USE_COLOR
+CFLAGS  = -Irpi_ws281x -Ilog.c/src -DLOG_USE_COLOR
 LDFLAGS = -Lrpi_ws281x -lws2811
+LDFLAGS =
 
 CC      = gcc
 RM      = rm -f
@@ -50,7 +52,7 @@ libs:
 # clean
 .PHONY: clean
 clean:
-	$(RM) *.o */*.o $(TARGET) clear
+	$(RM) *.[ch]~ */*.[ch]~ *.o */*.o $(TARGET) clear
 
 .PHONY: clean-libs
 clean-libs:

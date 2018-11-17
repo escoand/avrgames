@@ -230,7 +230,7 @@ nextStep(void)
 	                y;
 	uint8_t         rand_brick =
 	    rand() % (sizeof(bricks) / sizeof(bricks[0]));
-	uint8_t         rand_color = rand() % OUTPUT_COLORS_COUNT + 1;
+	uint8_t         rand_color = rand() % 255;
 
 	offset_x = (BOARD_WIDTH - TETRIS_BRICK_SIZE) / 2;
 	offset_y = -TETRIS_BRICK_SIZE + 1;

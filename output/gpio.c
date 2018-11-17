@@ -5,7 +5,7 @@
 
 #include "gpio.h"
 
-uint32_t        gpioColors[] = { GPIO_COLOR_MAPPING };
+
 ws2811_t        ledstring = {
     .freq = BOARD_STRIP_FREQ,
     .dmanum = BOARD_STRIP_DMA,
@@ -23,13 +23,25 @@ ws2811_t        ledstring = {
 
 
 uint32_t
-getColor(uint32_t colorId)
+getColor(uint8_t color, enum BOARD_PALETTE palette)
 {
-    for (uint8_t i = 0; i < sizeof(gpioColors) / sizeof(uint32_t); i += 2) {
-	if (gpioColors[i] == colorId)
-	    return gpioColors[++i];
+    static uint32_t defaultPalette[] = { GPIO_PALETTE_DEFAULT };
+    static uint32_t rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
+    static uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
+
+    switch (palette) {
+    case BOARD_PALETTE_RAINBOW:
+	return
+	    rainbowPalette[(uint8_t)
+			   (1.0 * color / 256 * sizeof(rainbowPalette))];
+    case BOARD_PALETTE_FIRE:
+	return
+	    firePalette[(uint8_t) (1.0 * color / 256 * sizeof(firePalette))];
+    default:
+	return
+	    defaultPalette[(uint8_t)
+			   (1.0 * color / 256 * sizeof(defaultPalette))];
     }
-    return GPIO_COLOR_NONE;
 }
 
 
@@ -47,6 +59,12 @@ initOutput(void)
 
 void
 setOutput(board_matrix * board)
+{
+    return setOutputUsePalette(board, BOARD_PALETTE_DEFAULT);
+}
+
+void
+setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 {
     uint16_t        pos;
     ws2811_return_t ret;
@@ -72,7 +90,8 @@ setOutput(board_matrix * board)
 	    pos = BOARD_WIDTH * BOARD_HEIGHT - pos - 1;
 #endif
 
-	    ledstring.channel[0].leds[pos] = getColor((*board)[y][x]);
+	    ledstring.channel[0].leds[pos] =
+		getColor((*board)[y][x], palette);
 	}
     }
 
@@ -89,7 +108,7 @@ clearOutput(void)
     ws2811_return_t ret;
 
     for (uint8_t i = 0; i < sizeof(ledstring.channel[0].leds); i++) {
-	ledstring.channel[0].leds[i] = getColor(BOARD_COLOR_NONE);
+	ledstring.channel[0].leds[i] = 0;
     }
 
     if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {

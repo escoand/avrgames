@@ -23,26 +23,19 @@
 #define BOARD_STRIP_TYPE        WS2812_STRIP
 
 
-#define GPIO_COLOR_FACTOR   0xBBBBBB
+#define GPIO_PALETTE_DEFAULT \
+                             0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, \
+                             0xFFFF00, 0xFF00FF, 0x00FFFF
 
-#define GPIO_COLOR_NONE     0x0
-#define GPIO_COLOR_WHITE    0xFFFFFF & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_RED      0xFF0000 & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_GREEN    0x00FF00 & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_BLUE     0x0000FF & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_YELLOW   0xFFFF00 & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_PINK     0xFF00FF & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_CYAN     0x00FFFF & GPIO_COLOR_FACTOR
-#define GPIO_COLOR_BROWN    0xF4A460
+#define GPIO_PALETTE_RAINBOW \
+                             0xFF0000, 0xD52A00, 0xAB5500, 0xAB7F00, \
+                             0xABAB00, 0x56D500, 0x00FF00, 0x00D52A, \
+                             0x00AB55, 0x0056AA, 0x0000FF, 0x2A00D5, \
+                             0x5500AB, 0x7F0081, 0xAB0055, 0xD5002B
 
-#define GPIO_COLOR_MAPPING  BOARD_COLOR_NONE,   GPIO_COLOR_NONE, \
-                            BOARD_COLOR_WHITE,  GPIO_COLOR_WHITE, \
-                            BOARD_COLOR_RED,    GPIO_COLOR_RED, \
-                            BOARD_COLOR_GREEN,  GPIO_COLOR_GREEN, \
-                            BOARD_COLOR_BLUE,   GPIO_COLOR_BLUE, \
-                            BOARD_COLOR_YELLOW, GPIO_COLOR_YELLOW, \
-                            BOARD_COLOR_PINK,   GPIO_COLOR_PINK, \
-                            BOARD_COLOR_CYAN,   GPIO_COLOR_CYAN, \
-                            BOARD_COLOR_BROWN,  GPIO_COLOR_BROWN
+#define GPIO_PALETTE_FIRE    0x000000, \
+                             0x330000, 0x660000, 0x990000, 0xCC0000, 0xFF0000, \
+                             0xFF3300, 0xFF6600, 0xFF9900, 0xFFCC00, 0xFFFF00, \
+                             0xFFFF33, 0xFFFF66, 0xFFFF99, 0xFFFFCC, 0xFFFFFF
 
 #endif				/* OUTPUT_GPIO_H_ */

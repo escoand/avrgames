@@ -1,6 +1,8 @@
 #ifndef CLOCK_H_
 #define CLOCK_H_
 
+#include <stdlib.h>
+
 #include "../output/output.h"
 
 /*
@@ -9,7 +11,7 @@
  */
 #define CLOCK_24_HOURS     1
 
-#define CLOCK_DIGIT_COLOR  BOARD_COLOR_BLUE
+#define CLOCK_DIGIT_COLOR  255
 #define CLOCK_DIGIT_WIDTH  3
 #define CLOCK_DIGIT_HEIGHT 5
 #define CLOCK_DIGIT_ROW1   2

@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <log.h>
 
 #include "output.h"
 #include "terminal.h"
-
-uint8_t         terminalChars[] = { TERMINAL_CHAR_MAPPING };
 
 
 void
@@ -19,15 +18,21 @@ drawHorizontalBorder(void)
     putchar('\n');
 }
 
-uint32_t
-getChar(uint32_t colorId)
+uint8_t
+getChar(uint8_t color, enum BOARD_PALETTE palette)
 {
-    for (uint8_t i = 0; i < sizeof(terminalChars) / sizeof(uint8_t);
-	 i += 2) {
-	if (terminalChars[i] == colorId)
-	    return terminalChars[++i];
+    static uint8_t defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
+    static uint8_t firePalette[] = { TERMINAL_PALETTE_FIRE };
+
+    switch (palette) {
+    case BOARD_PALETTE_FIRE:
+	return
+	    firePalette[(uint8_t) (1.0 * color / 256 * sizeof(firePalette))];
+    default:
+	return
+	    defaultPalette[(uint8_t)
+			   (1.0 * color / 256 * sizeof(defaultPalette))];
     }
-    return TERMINAL_CHAR_NONE;
 }
 
 
@@ -39,6 +44,12 @@ initOutput(void)
 void
 setOutput(board_matrix * board)
 {
+    return setOutputUsePalette(board, BOARD_PALETTE_DEFAULT);
+}
+
+void
+setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
+{
     clearOutput();
     drawHorizontalBorder();
 
@@ -46,7 +57,7 @@ setOutput(board_matrix * board)
 	putchar(TERMINAL_BORDER_VERTICAL);
 	putchar(' ');
 	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
-	    putchar(getChar((*board)[y][x]));
+	    putchar(getChar((*board)[y][x], palette));
 	    putchar(' ');
 	}
 	putchar(TERMINAL_BORDER_VERTICAL);

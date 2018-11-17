@@ -10,11 +10,14 @@
 #include "games/loading.h"
 #include "games/menu.h"
 #include "games/clock.h"
+#include "games/fire.h"
 
 int
 main(void)
 {
     uint32_t        button;
+
+fire_main();
 
 #ifdef CLKPR
     CLKPR = _BV(CLKPCE);

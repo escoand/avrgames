@@ -6,24 +6,15 @@
 #define BOARD_WIDTH          10
 #define BOARD_HEIGHT         18
 
-
-#define OUTPUT_COLORS_COUNT  7
-
-#define BOARD_COLOR_NONE     0
-#define BOARD_COLOR_WHITE    1
-#define BOARD_COLOR_RED      2
-#define BOARD_COLOR_GREEN    3
-#define BOARD_COLOR_BLUE     4
-#define BOARD_COLOR_YELLOW   5
-#define BOARD_COLOR_PINK     6
-#define BOARD_COLOR_CYAN     7
-#define BOARD_COLOR_BROWN    8
-
+enum BOARD_PALETTE {
+    BOARD_PALETTE_DEFAULT, BOARD_PALETTE_RAINBOW, BOARD_PALETTE_FIRE
+};
 
 typedef uint8_t board_matrix[BOARD_HEIGHT][BOARD_WIDTH];
 
 void            initOutput(void);
-void            setOutput(board_matrix * board);
+void            setOutput(board_matrix *);
+void            setOutputUsePalette(board_matrix *, enum BOARD_PALETTE);
 void            clearOutput(void);
 
 #endif				/* OUTPUT_H_ */
