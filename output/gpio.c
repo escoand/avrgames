@@ -31,16 +31,17 @@ getColor(uint8_t color, enum BOARD_PALETTE palette)
 
     switch (palette) {
     case BOARD_PALETTE_RAINBOW:
-	return
-	    rainbowPalette[(uint8_t)
-			   (1.0 * color / 256 * sizeof(rainbowPalette))];
+	return rainbowPalette[(uint8_t)
+			      (1.0 * color / 256 *
+			       sizeof(rainbowPalette))];
     case BOARD_PALETTE_FIRE:
 	return
-	    firePalette[(uint8_t) (1.0 * color / 256 * sizeof(firePalette))];
+	    firePalette[(uint8_t)
+			(1.0 * color / 256 * sizeof(firePalette))];
     default:
-	return
-	    defaultPalette[(uint8_t)
-			   (1.0 * color / 256 * sizeof(defaultPalette))];
+	return defaultPalette[(uint8_t)
+			      (1.0 * color / 256 *
+			       sizeof(defaultPalette))];
     }
 }
 

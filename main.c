@@ -17,8 +17,6 @@ main(void)
 {
     uint32_t        button;
 
-fire_main();
-
 #ifdef CLKPR
     CLKPR = _BV(CLKPCE);
     CLKPR = 0;
@@ -26,6 +24,8 @@ fire_main();
 
     initInput();
     initOutput();
+
+    fire_main();
 
     // init device
     while (clock_main() != CLOCK_RETURN_SUCCESS) {

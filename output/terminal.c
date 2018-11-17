@@ -21,17 +21,18 @@ drawHorizontalBorder(void)
 uint8_t
 getChar(uint8_t color, enum BOARD_PALETTE palette)
 {
-    static uint8_t defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
-    static uint8_t firePalette[] = { TERMINAL_PALETTE_FIRE };
+    static uint8_t  defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
+    static uint8_t  firePalette[] = { TERMINAL_PALETTE_FIRE };
 
     switch (palette) {
     case BOARD_PALETTE_FIRE:
 	return
-	    firePalette[(uint8_t) (1.0 * color / 256 * sizeof(firePalette))];
+	    firePalette[(uint8_t)
+			(1.0 * color / 256 * sizeof(firePalette))];
     default:
-	return
-	    defaultPalette[(uint8_t)
-			   (1.0 * color / 256 * sizeof(defaultPalette))];
+	return defaultPalette[(uint8_t)
+			      (1.0 * color / 256 *
+			       sizeof(defaultPalette))];
     }
 }
 

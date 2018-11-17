@@ -66,11 +66,12 @@ getInput(void)
 	    if (keyMapping[i] == ev.code) {
 		button = button | keyMapping[++i];
 		log_debug("input event code=0x%02X value=0x%0X is 0x%0X",
-		     ev.code, ev.value, keyMapping[i]);
+			  ev.code, ev.value, keyMapping[i]);
 		break;
 	    }
 	}
-	log_debug("input event code=0x%02X value=0x%0X", ev.code, ev.value);
+	log_debug("input event code=0x%02X value=0x%0X", ev.code,
+		  ev.value);
     }
 
     if (errno != EAGAIN) {

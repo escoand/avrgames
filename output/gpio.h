@@ -23,11 +23,11 @@
 #define BOARD_STRIP_TYPE        WS2812_STRIP
 
 
-#define GPIO_PALETTE_DEFAULT \
+#define GPIO_PALETTE_DEFAULT 0x000000, \
                              0xFFFFFF, 0xFF0000, 0x00FF00, 0x0000FF, \
                              0xFFFF00, 0xFF00FF, 0x00FFFF
 
-#define GPIO_PALETTE_RAINBOW \
+#define GPIO_PALETTE_RAINBOW 0x000000, \
                              0xFF0000, 0xD52A00, 0xAB5500, 0xAB7F00, \
                              0xABAB00, 0x56D500, 0x00FF00, 0x00D52A, \
                              0x00AB55, 0x0056AA, 0x0000FF, 0x2A00D5, \

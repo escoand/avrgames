@@ -1,17 +1,16 @@
 TARGET  = ledmatrix
 SRC     = main.c \
           input/device.c \
-          output/terminal.c \
+          output/gpio.c \
           games/loading.c \
           games/menu.c \
           games/clock.c \
           games/tetris.c \
           games/fire.c \
-          log.c/src/log.c
+          log/src/log.c
 OBJ     = $(SRC:.c=.o)
-CFLAGS  = -Irpi_ws281x -Ilog.c/src -DLOG_USE_COLOR
+CFLAGS  = -Irpi_ws281x -Ilog/src -DLOG_USE_COLOR -g
 LDFLAGS = -Lrpi_ws281x -lws2811
-LDFLAGS =
 
 CC      = gcc
 RM      = rm -f

@@ -1,5 +1,5 @@
-#ifndef OUTPUT_H_
-#define OUTPUT_H_
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include <stdint.h>
 
@@ -17,4 +17,4 @@ void            setOutput(board_matrix *);
 void            setOutputUsePalette(board_matrix *, enum BOARD_PALETTE);
 void            clearOutput(void);
 
-#endif				/* OUTPUT_H_ */
+#endif				/* OUTPUT_H */
