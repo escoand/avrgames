@@ -26,13 +26,13 @@ getChar(uint8_t color, enum BOARD_PALETTE palette)
 
     switch (palette) {
     case BOARD_PALETTE_FIRE:
-	return
-	    firePalette[(uint8_t)
-			(1.0 * color / 256 * sizeof(firePalette))];
+	return firePalette[(uint8_t)
+			   (1.0 * color / 256 *
+			    (sizeof(firePalette) - 1))];
     default:
 	return defaultPalette[(uint8_t)
 			      (1.0 * color / 256 *
-			       sizeof(defaultPalette))];
+			       (sizeof(defaultPalette) - 1))];
     }
 }
 
