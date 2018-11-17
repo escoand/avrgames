@@ -1,16 +1,22 @@
-TARGET  = ledmatrix
-SRC     = main.c \
-          input/device.c \
-          output/gpio.c \
-          games/loading.c \
-          games/menu.c \
-          games/clock.c \
-          games/tetris.c \
-          games/fire.c \
-          log/src/log.c
-OBJ     = $(SRC:.c=.o)
-CFLAGS  = -Irpi_ws281x -Ilog/src -DLOG_USE_COLOR -g
-LDFLAGS = -Lrpi_ws281x -lws2811
+TARGET   = ledmatrix
+SRC      = main.c \
+           input/device.c \
+           output/gpio.c \
+           games/loading.c \
+           games/menu.c \
+           games/clock.c \
+           games/tetris.c \
+           games/fire.c \
+           log/src/log.c
+OBJ      = $(SRC:.c=.o)
+CFLAGS   = -Irpi_ws281x -Ilog/src -DLOG_USE_COLOR -g
+LDFLAGS  = -Lrpi_ws281x -lws2811
+
+# terminal
+TERMSRC := $(filter-out $(wildcard */gpio.c),$(SRC)) \
+           output/terminal.c
+TERMOBJ  = $(TERMSRC:.c=.o)
+TERMLDF  =
 
 CC      = gcc
 RM      = rm -f
@@ -22,6 +28,12 @@ all: $(TARGET) clear
 # source
 %.o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
+
+# terminal
+terminal: SRC = $(TERMSRC)
+          OBJ = $(TERMOBJ)
+          LDFLAGS = $(TERMLDF)
+terminal: $(TARGET)
 
 # targets
 $(TARGET): $(OBJ)
