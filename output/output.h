@@ -17,6 +17,7 @@
 #define BOARD_COLOR_YELLOW   5
 #define BOARD_COLOR_PINK     6
 #define BOARD_COLOR_CYAN     7
+#define BOARD_COLOR_BROWN    8
 
 
 typedef uint8_t board_matrix[BOARD_HEIGHT][BOARD_WIDTH];

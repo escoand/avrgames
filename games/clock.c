@@ -127,7 +127,8 @@ clock_main(void)
 	   mins % 10);
 
     // check if correct
-    if (timeinfo->tm_year < 100)
+    // if (timeinfo->tm_year < 100)
+    if (access(CLOCK_CHECK_FILE, F_OK) == -1)
 	return CLOCK_RETURN_FAILURE;
 
     // clear

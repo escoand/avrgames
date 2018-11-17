@@ -104,8 +104,6 @@ uint8_t         brick[TETRIS_BRICK_SIZE][TETRIS_BRICK_SIZE];
 int16_t         offset_x = INT16_MAX;
 int16_t         offset_y = INT16_MAX;
 
-uint16_t        tick = 300;
-
 uint8_t
 insertBrick(int16_t _offset_x, int16_t _offset_y,
 	    enum tetris_actions action)
@@ -202,9 +200,9 @@ fullLines(void)
      */
     for (a = 0; a < 3; a++) {
 	setOutput(&tmp);
-	ms_sleep(tick);
+	ms_sleep(TETRIS_TICK_MS);
 	setOutput(&board);
-	ms_sleep(tick);
+	ms_sleep(TETRIS_TICK_MS);
     }
 
     /*
@@ -336,7 +334,7 @@ tetris_main(void)
 	    break;
 
 	setOutput(&board);
-	ms_sleep(tick);
+	ms_sleep(TETRIS_TICK_MS);
     }
 
     sleep(5);

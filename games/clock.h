@@ -17,6 +17,8 @@
 #define CLOCK_DIGIT_COL1   1
 #define CLOCK_DIGIT_COL2   6
 
+#define CLOCK_CHECK_FILE   "/DietPi/dietpi/.timesync_exit_status"
+
 #define CLOCK_RETURN_SUCCESS  0
 #define CLOCK_RETURN_FAILURE  1
 
