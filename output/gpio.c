@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <log.h>
 
 #include "gpio.h"
 
@@ -28,20 +29,23 @@ getColor(uint8_t color, enum BOARD_PALETTE palette)
     static uint32_t defaultPalette[] = { GPIO_PALETTE_DEFAULT };
     static uint32_t rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
     static uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
+    static float    defaultFactor =
+	(sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
+    static float    rainbowFactor =
+	(sizeof(rainbowPalette) / sizeof(uint32_t) - 1) / 256.0;
+    static float    fireFactor =
+	(sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
 
     switch (palette) {
     case BOARD_PALETTE_RAINBOW:
 	return rainbowPalette[(uint8_t)
-			      (1.0 * color / 256 *
-			       (sizeof(rainbowPalette) - 1))];
+			      (color * rainbowFactor)];
     case BOARD_PALETTE_FIRE:
 	return firePalette[(uint8_t)
-			   (1.0 * color / 256 *
-			    (sizeof(firePalette) - 1))];
+			   (color * fireFactor)];
     default:
 	return defaultPalette[(uint8_t)
-			      (1.0 * color / 256 *
-			       (sizeof(defaultPalette) - 1))];
+			      (color * defaultFactor)];
     }
 }
 

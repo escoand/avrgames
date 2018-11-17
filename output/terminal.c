@@ -23,16 +23,18 @@ getChar(uint8_t color, enum BOARD_PALETTE palette)
 {
     static uint8_t  defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
     static uint8_t  firePalette[] = { TERMINAL_PALETTE_FIRE };
+    static float    defaultFactor =
+	(sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
+    static float    fireFactor =
+	(sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
 
     switch (palette) {
     case BOARD_PALETTE_FIRE:
 	return firePalette[(uint8_t)
-			   (1.0 * color / 256 *
-			    (sizeof(firePalette) - 1))];
+			   (color * fireFactor)];
     default:
 	return defaultPalette[(uint8_t)
-			      (1.0 * color / 256 *
-			       (sizeof(defaultPalette) - 1))];
+			      (color * defaultFactor)];
     }
 }
 

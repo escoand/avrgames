@@ -1,5 +1,5 @@
 /.dep/
-/log.c/
+/log/
 *~
 *.eep
 *.elf

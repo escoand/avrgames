@@ -1,16 +1,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#if _WIN32
-#include <windows.h>
-#else
-#include <unistd.h>
-#endif
-#if DEBUG
-#include <stdio.h>
-#endif
 #include <log.h>
 
+#include "../env.h"
 #include "../output/output.h"
 #include "qlock.h"
 
@@ -102,7 +95,7 @@ qlock_main(void)
 	    setWord(&board, qlockWords[3]);
 #if QLOCK_QUARTER_AFTER == 0
 	    hours++;
-	    log_debug("quarter %i2, hours);
+	    log_debug("quarter %i2", hours);
 #else
 	    log_debug(" quarter past % i ", hours);
 #endif
@@ -140,13 +133,8 @@ qlock_main(void)
 	setWord(&board, qlockWords[6 + hours]);
 
 	setOutput(&board);
-	sleep(10);
+	ms_sleep(10000);
     }
 
     clearOutput();
 }
-
-
-
-
-

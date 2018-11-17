@@ -10,7 +10,6 @@
 #include "games/loading.h"
 #include "games/menu.h"
 #include "games/clock.h"
-#include "games/fire.h"
 
 int
 main(void)
@@ -24,8 +23,6 @@ main(void)
 
     initInput();
     initOutput();
-
-    fire_main();
 
     // init device
     while (clock_main() != CLOCK_RETURN_SUCCESS) {
