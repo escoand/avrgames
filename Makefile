@@ -13,7 +13,8 @@ CFLAGS   = -Irpi_ws281x -Ilog/src -DLOG_USE_COLOR -g
 LDFLAGS  = -Lrpi_ws281x -lws2811
 
 # terminal
-TERMSRC := $(filter-out $(wildcard */gpio.c),$(SRC)) \
+TERMSRC := $(filter-out $(wildcard */gpio.c */device.c),$(SRC)) \
+           input/terminal.c \
            output/terminal.c
 TERMOBJ  = $(TERMSRC:.c=.o)
 TERMLDF  =
