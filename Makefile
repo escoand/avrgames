@@ -31,10 +31,8 @@ all: $(TARGET) clear
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # terminal
-terminal: SRC = $(TERMSRC)
-          OBJ = $(TERMOBJ)
-          LDFLAGS = $(TERMLDF)
-terminal: $(TARGET)
+terminal: $(TERMOBJ)
+	$(CC) -o $(TARGET) $^ $(TERMLDF)
 
 # targets
 $(TARGET): $(OBJ)
