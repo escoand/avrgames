@@ -8,6 +8,13 @@
 #include "terminal.h"
 
 
+uint32_t defaultPalette[] = { GPIO_PALETTE_DEFAULT };
+uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
+uint8_t defaultCount =	sizeof(defaultPalette) / sizeof(uint32_t);
+uint8_t fireCount =	sizeof(firePalette) / sizeof(uint32_t);
+float defaultFactor =	(defaultCount - 1) / 256.0;
+float fireFactor =	(fireCount - 1) / 256.0;
+
 void
 drawHorizontalBorder(void)
 {
@@ -21,20 +28,11 @@ drawHorizontalBorder(void)
 uint8_t
 getChar(uint8_t color, enum BOARD_PALETTE palette)
 {
-    static uint8_t  defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
-    static uint8_t  firePalette[] = { TERMINAL_PALETTE_FIRE };
-    static float    defaultFactor =
-	(sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
-    static float    fireFactor =
-	(sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
-
     switch (palette) {
     case BOARD_PALETTE_FIRE:
-	return firePalette[(uint8_t)
-			   (color * fireFactor)];
+	return firePalette[color < fireCount ? color : fireCount - 1];
     default:
-	return defaultPalette[(uint8_t)
-			      (color * defaultFactor)];
+	return defaultPalette[color < defaultColor ? color : defaultCount - 1];
     }
 }
 
@@ -44,15 +42,22 @@ initOutput(void)
 {
 }
 
-void
-setOutput(board_matrix * board)
+uint8_t
+mapToPalette(uint8_t color, enum BOARD_PALETTE palette)
 {
-    return setOutputUsePalette(board, BOARD_PALETTE_DEFAULT);
+    switch (palette) {
+    case BOARD_PALETTE_FIRE:
+	return color * fireFactor;
+    default:
+	return color * defaultFactor;
+    }
 }
 
 void
 setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 {
+    uint8_t char_;
+
     clearOutput();
     drawHorizontalBorder();
 
@@ -60,7 +65,33 @@ setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 	putchar(TERMINAL_BORDER_VERTICAL);
 	putchar(' ');
 	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
-	    putchar(getChar((*board)[y][x], palette));
+     char_ = getChar((*board)[y][x], palette);
+	    putchar(char_);
+	    putchar(' ');
+	}
+	putchar(TERMINAL_BORDER_VERTICAL);
+	putchar('\n');
+    }
+
+    drawHorizontalBorder();
+}
+
+void
+setRawOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
+{
+    uint8_t         index;
+    uint8_t         char_;
+
+    clearOutput();
+    drawHorizontalBorder();
+
+    for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
+	putchar(TERMINAL_BORDER_VERTICAL);
+	putchar(' ');
+	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
+     index = maptToPallete((*board)[y][x], palette);
+     char_ = getChar(index, palette);
+	    putchar(char_);
 	    putchar(' ');
 	}
 	putchar(TERMINAL_BORDER_VERTICAL);
