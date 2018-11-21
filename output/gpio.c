@@ -13,9 +13,6 @@ uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
 uint8_t defaultCount =	sizeof(defaultPalette) / sizeof(uint32_t);
 uint8_t rainbowCount =	sizeof(rainbowPalette) / sizeof(uint32_t);
 uint8_t fireCount =	sizeof(firePalette) / sizeof(uint32_t);
-float defaultFactor =	(defaultCount - 1) / 256.0;
-float rainbowFactor = (rainbowCount - 1) / 256.0;
-float fireFactor =	(fireCount - 1) / 256.0;
 
 ws2811_t        ledstring = {
     .freq = BOARD_STRIP_FREQ,
@@ -97,6 +94,10 @@ initOutput(void)
 uint8_t
 mapToPalette(uint8_t color, enum BOARD_PALETTE palette)
 {
+    static float defaultFactor =	(defaultCount - 1) / 256.0;
+    static float rainbowFactor = (rainbowCount - 1) / 256.0;
+    static float fireFactor =	(fireCount - 1) / 256.0;
+
     switch (palette) {
     case BOARD_PALETTE_RAINBOW:
 	return color * rainbowFactor;
