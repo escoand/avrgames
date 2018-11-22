@@ -1,6 +1,7 @@
 TARGET   = ledmatrix
 SRC      = main.c \
            input/device.c \
+           input/mqtt.c \
            output/gpio.c \
            games/loading.c \
            games/menu.c \
@@ -9,15 +10,18 @@ SRC      = main.c \
            games/fire.c \
            log/src/log.c
 OBJ      = $(SRC:.c=.o)
-CFLAGS   = -Irpi_ws281x -Ilog/src -DLOG_USE_COLOR -g
-LDFLAGS  = -Lrpi_ws281x -lws2811
+CFLAGS   = -Wall -ggdb -O2 \
+           -Irpi_ws281x \
+           -Ilog/src -DLOG_USE_COLOR -g
+LDFLAGS  = -Lrpi_ws281x -lws2811 \
+           -lmosquitto
 
 # terminal
 TERMSRC := $(filter-out $(wildcard */gpio.c */device.c),$(SRC)) \
-           input/terminal.c \
-           output/terminal.c
+           output/terminal.c \
+           input/terminal.c
 TERMOBJ  = $(TERMSRC:.c=.o)
-TERMLDF  =
+TERMLDF  = -lmosquitto
 
 # clear
 CLRSRC   = clear.c \
@@ -29,6 +33,8 @@ CC       = gcc
 RM       = rm -f
 INSTALL  = install -o root
 
+.PHONY: indent libs install uninstall clean clean-libs
+
 # default target
 all: $(TARGET) clear
 
@@ -37,44 +43,40 @@ all: $(TARGET) clear
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 # targets
-$(TARGET): $(OBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+$(TARGET): libs $(OBJ)
+	$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 terminal: $(TERMOBJ)
 	$(CC) -o $(TARGET) $^ $(TERMLDF)
 
-clear: $(CLROBJ)
+clear: libs $(CLROBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 # install
-.PHONY: install
 install: $(TARGET)
 	$(INSTALL) $< /usr/local/bin/
 	$(INSTALL) etc/$(TARGET).service /etc/systemd/system/
 	systemctl enable $(TARGET)
 
 # uninstall
-.PHONY: uninstall
 uninstall:
 	systemctl disable $(TARGET)
 	$(RM) /usr/local/bin/$(TARGET) /etc/systemd/system/$(TARGET).service
 
 # libs
-.PHONY: libs
 libs:
-	scons -C rpi_ws281x
+	#scons -C rpi_ws281x
+	make -C mosquitto/lib libmosquitto.a
 
 # clean
-.PHONY: clean
 clean:
 	$(RM) *.[ch]~ */*.[ch]~ *.o */*.o $(TARGET) clear
 
-.PHONY: clean-libs
 clean-libs:
-	scons -C rpi_ws281x --clean
+	#scons -C rpi_ws281x --clean
+	make -C mosquitto/lib clean
 
 # helper
-.PHONY: indent
 indent:
 	indent -orig *.c input/*.c input/*.h output/*.c output/*.h games/*.c games/*.h
 

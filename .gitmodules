@@ -4,6 +4,3 @@
 [submodule "log"]
 	path = log
 	url = https://github.com/rxi/log.c.git
-[submodule "mosquitto"]
-	path = mosquitto
-	url = https://github.com/eclipse/mosquitto.git
