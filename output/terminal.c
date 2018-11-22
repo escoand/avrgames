@@ -43,6 +43,7 @@ getChar(uint8_t color, enum BOARD_PALETTE palette)
 void
 initOutput(void)
 {
+    clearOutput();
 }
 
 uint8_t
@@ -61,7 +62,11 @@ setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 {
     uint8_t         char_;
 
+#if _WIN32
     clearOutput();
+#else
+    printf("\e[;H");
+#endif
     drawHorizontalBorder();
 
     for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
@@ -85,7 +90,11 @@ setRawOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
     uint8_t         index;
     uint8_t         char_;
 
+#if _WIN32
     clearOutput();
+#else
+    printf("\e[;H");
+#endif
     drawHorizontalBorder();
 
     for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
