@@ -7,12 +7,18 @@
 #include "gpio.h"
 
 
-uint32_t defaultPalette[] = { GPIO_PALETTE_DEFAULT };
-uint32_t rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
-uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
-uint8_t defaultCount =	sizeof(defaultPalette) / sizeof(uint32_t);
-uint8_t rainbowCount =	sizeof(rainbowPalette) / sizeof(uint32_t);
-uint8_t fireCount =	sizeof(firePalette) / sizeof(uint32_t);
+uint32_t        defaultPalette[] = { GPIO_PALETTE_DEFAULT };
+uint32_t        rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
+uint32_t        firePalette[] = { GPIO_PALETTE_FIRE };
+uint8_t         defaultCount = sizeof(defaultPalette) / sizeof(uint32_t);
+uint8_t         rainbowCount = sizeof(rainbowPalette) / sizeof(uint32_t);
+uint8_t         fireCount = sizeof(firePalette) / sizeof(uint32_t);
+float           defaultFactor =
+    (sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
+float           rainbowFactor =
+    (sizeof(rainbowPalette) / sizeof(uint32_t) - 1) / 256.0;
+float           fireFactor =
+    (sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
 
 ws2811_t        ledstring = {
     .freq = BOARD_STRIP_FREQ,
@@ -32,27 +38,23 @@ ws2811_t        ledstring = {
 uint16_t
 getRealPosition(uint8_t x, uint8_t y)
 {
-     uint16_t pos;
+    uint16_t        pos;
 
 #if BOARD_STRIP_MODE == 0
-	    pos = (x * BOARD_HEIGHT) + y;
+    pos = (x * BOARD_HEIGHT) + y;
 #elif BOARD_STRIP_MODE == 1
-	    pos = (x * BOARD_HEIGHT) + (BOARD_HEIGHT - y);
+    pos = (x * BOARD_HEIGHT) + (BOARD_HEIGHT - y);
 #elif BOARD_STRIP_MODE == 2
-	    pos =
-		(x * BOARD_HEIGHT) + (x % 2 ==
-				      0 ? y : BOARD_HEIGHT - y - 1);
+    pos = (x * BOARD_HEIGHT) + (x % 2 == 0 ? y : BOARD_HEIGHT - y - 1);
 #elif BOARD_STRIP_MODE == 3
-	    pos =
-		(x * BOARD_HEIGHT) + (x % 2 ==
-				      0 ? BOARD_HEIGHT - y - 1 : y);
+    pos = (x * BOARD_HEIGHT) + (x % 2 == 0 ? BOARD_HEIGHT - y - 1 : y);
 #endif
 
 #if BOARD_STRIP_REVERSE == 1
-	    pos = BOARD_WIDTH * BOARD_HEIGHT - pos - 1;
+    pos = BOARD_WIDTH * BOARD_HEIGHT - pos - 1;
 #endif
 
-     return pos;
+    return pos;
 }
 
 uint32_t
@@ -60,22 +62,24 @@ getColor(uint8_t color, enum BOARD_PALETTE palette)
 {
     switch (palette) {
     case BOARD_PALETTE_RAINBOW:
-	return rainbowPalette[color < rainbowCount ? color : rainbowCount - 1];
+	return rainbowPalette[color <
+			      rainbowCount ? color : rainbowCount - 1];
     case BOARD_PALETTE_FIRE:
 	return firePalette[color < fireCount ? color : fireCount - 1];
     default:
-	return defaultPalette[color < defaultCount ? color : defaultCount - 1];
+	return defaultPalette[color <
+			      defaultCount ? color : defaultCount - 1];
     }
 }
 
 void
 renderOutput()
 {
-     ws2811_return_t ret;
+    ws2811_return_t ret;
 
-     if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {
+    if ((ret = ws2811_render(&ledstring)) != WS2811_SUCCESS) {
 	log_error("ws2811_render failed: %s",
-		ws2811_get_return_t_str(ret));
+		  ws2811_get_return_t_str(ret));
     }
 }
 
@@ -86,18 +90,13 @@ initOutput(void)
     ws2811_return_t ret;
 
     if ((ret = ws2811_init(&ledstring)) != WS2811_SUCCESS) {
-	log_error("ws2811_init failed: %s",
-		ws2811_get_return_t_str(ret));
+	log_error("ws2811_init failed: %s", ws2811_get_return_t_str(ret));
     }
 }
 
 uint8_t
 mapToPalette(uint8_t color, enum BOARD_PALETTE palette)
 {
-    static float defaultFactor =	(defaultCount - 1) / 256.0;
-    static float rainbowFactor = (rainbowCount - 1) / 256.0;
-    static float fireFactor =	(fireCount - 1) / 256.0;
-
     switch (palette) {
     case BOARD_PALETTE_RAINBOW:
 	return color * rainbowFactor;
@@ -117,9 +116,9 @@ setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 
     for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
 	for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
-     pos = getRealPosition(x, y);
-     index = mapToPalette((*board)[y][x], palette);
-     color = getColor(index, palette);
+	    pos = getRealPosition(x, y);
+	    index = mapToPalette((*board)[y][x], palette);
+	    color = getColor(index, palette);
 	    ledstring.channel[0].leds[pos] = color;
 	}
     }
@@ -135,8 +134,8 @@ setRawOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 
     for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
 	for (uint8_t y = 0; y < BOARD_HEIGHT; y++) {
-     pos = getRealPosition(x, y);
-     color = getColor((*board)[y][x], palette);
+	    pos = getRealPosition(x, y);
+	    color = getColor((*board)[y][x], palette);
 	    ledstring.channel[0].leds[pos] = color;
 	}
     }
@@ -149,7 +148,7 @@ clearOutput(void)
 {
     ws2811_return_t ret;
 
-    memset(ledstring.channel[0].leds, 0, sizeof(ledstring.channel[0].leds));
+    memset(ledstring.channel[0].leds, 0, ledstring.channel[0].count);
 
     renderOutput();
 }

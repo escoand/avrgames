@@ -9,7 +9,8 @@
 void
 fire_main(void)
 {
-    uint8_t x, y;
+    uint8_t         x,
+                    y;
     board_matrix    board;
     memset(&board, 0, sizeof(board));
 

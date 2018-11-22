@@ -54,7 +54,7 @@ menu_main(void)
     uint32_t        slept = 0;
     uint32_t        button;
 
-    setOutput(&menu);
+    setRawOutput(&menu);
 
     while (slept <= MENU_TIMEOUT_MS) {
 	button = getInput();

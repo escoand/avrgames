@@ -8,10 +8,14 @@
 #include "terminal.h"
 
 
-uint32_t defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
-uint32_t firePalette[] = { TERMINAL_PALETTE_FIRE };
-uint8_t defaultCount =	sizeof(defaultPalette) / sizeof(uint32_t);
-uint8_t fireCount =	sizeof(firePalette) / sizeof(uint32_t);
+uint32_t        defaultPalette[] = { TERMINAL_PALETTE_DEFAULT };
+uint32_t        firePalette[] = { TERMINAL_PALETTE_FIRE };
+uint8_t         defaultCount = sizeof(defaultPalette) / sizeof(uint32_t);
+uint8_t         fireCount = sizeof(firePalette) / sizeof(uint32_t);
+float           defaultFactor =
+    (sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
+float           fireFactor =
+    (sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
 
 void
 drawHorizontalBorder(void)
@@ -30,7 +34,8 @@ getChar(uint8_t color, enum BOARD_PALETTE palette)
     case BOARD_PALETTE_FIRE:
 	return firePalette[color < fireCount ? color : fireCount - 1];
     default:
-	return defaultPalette[color < defaultCount ? color : defaultCount - 1];
+	return defaultPalette[color <
+			      defaultCount ? color : defaultCount - 1];
     }
 }
 
@@ -43,9 +48,6 @@ initOutput(void)
 uint8_t
 mapToPalette(uint8_t color, enum BOARD_PALETTE palette)
 {
-    static float defaultFactor =	(defaultCount - 1) / 256.0;
-    static float fireFactor =	(fireCount - 1) / 256.0;
-
     switch (palette) {
     case BOARD_PALETTE_FIRE:
 	return color * fireFactor;
@@ -57,7 +59,7 @@ mapToPalette(uint8_t color, enum BOARD_PALETTE palette)
 void
 setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 {
-    uint8_t char_;
+    uint8_t         char_;
 
     clearOutput();
     drawHorizontalBorder();
@@ -66,7 +68,7 @@ setOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 	putchar(TERMINAL_BORDER_VERTICAL);
 	putchar(' ');
 	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
-     char_ = getChar((*board)[y][x], palette);
+	    char_ = getChar((*board)[y][x], palette);
 	    putchar(char_);
 	    putchar(' ');
 	}
@@ -90,8 +92,8 @@ setRawOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 	putchar(TERMINAL_BORDER_VERTICAL);
 	putchar(' ');
 	for (uint8_t x = 0; x < BOARD_WIDTH; x++) {
-     index = maptToPalette((*board)[y][x], palette);
-     char_ = getChar(index, palette);
+	    index = mapToPalette((*board)[y][x], palette);
+	    char_ = getChar(index, palette);
 	    putchar(char_);
 	    putchar(' ');
 	}
