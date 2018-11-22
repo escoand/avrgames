@@ -7,17 +7,17 @@
 #include "gpio.h"
 
 
-uint32_t        defaultPalette[] = { GPIO_PALETTE_DEFAULT };
-uint32_t        rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
-uint32_t        firePalette[] = { GPIO_PALETTE_FIRE };
-uint8_t         defaultCount = sizeof(defaultPalette) / sizeof(uint32_t);
-uint8_t         rainbowCount = sizeof(rainbowPalette) / sizeof(uint32_t);
-uint8_t         fireCount = sizeof(firePalette) / sizeof(uint32_t);
-float           defaultFactor =
+static uint32_t defaultPalette[] = { GPIO_PALETTE_DEFAULT };
+static uint32_t rainbowPalette[] = { GPIO_PALETTE_RAINBOW };
+static uint32_t firePalette[] = { GPIO_PALETTE_FIRE };
+static uint8_t  defaultCount = sizeof(defaultPalette) / sizeof(uint32_t);
+static uint8_t  rainbowCount = sizeof(rainbowPalette) / sizeof(uint32_t);
+static uint8_t  fireCount = sizeof(firePalette) / sizeof(uint32_t);
+static float    defaultFactor =
     (sizeof(defaultPalette) / sizeof(uint32_t) - 1) / 256.0;
-float           rainbowFactor =
+static float    rainbowFactor =
     (sizeof(rainbowPalette) / sizeof(uint32_t) - 1) / 256.0;
-float           fireFactor =
+static float    fireFactor =
     (sizeof(firePalette) / sizeof(uint32_t) - 1) / 256.0;
 
 ws2811_t        ledstring = {
