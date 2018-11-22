@@ -19,9 +19,15 @@ TERMSRC := $(filter-out $(wildcard */gpio.c */device.c),$(SRC)) \
 TERMOBJ  = $(TERMSRC:.c=.o)
 TERMLDF  =
 
-CC      = gcc
-RM      = rm -f
-INSTALL = install -o root
+# clear
+CLRSRC   = clear.c \
+	   output/gpio.c \
+	   log/src/log.c
+CLROBJ   = $(CLRSRC:.c=.o)
+
+CC       = gcc
+RM       = rm -f
+INSTALL  = install -o root
 
 # default target
 all: $(TARGET) clear
@@ -30,15 +36,14 @@ all: $(TARGET) clear
 %.o : %.c
 	$(CC) $(CFLAGS) -o $@ -c $<
 
-# terminal
-terminal: $(TERMOBJ)
-	$(CC) -o $(TARGET) $^ $(TERMLDF)
-
 # targets
 $(TARGET): $(OBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
-clear: clear.o output/gpio.o
+terminal: $(TERMOBJ)
+	$(CC) -o $(TARGET) $^ $(TERMLDF)
+
+clear: $(CLROBJ)
 	$(CC) -o $@ $^ $(LDFLAGS)
 
 # install
