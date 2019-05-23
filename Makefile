@@ -66,7 +66,7 @@ uninstall:
 
 # libs
 libs:
-	#scons -C rpi_ws281x
+	scons -C rpi_ws281x
 	make -C mosquitto/lib libmosquitto.a
 
 # clean

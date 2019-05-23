@@ -1,0 +1,4 @@
+language: c
+install: make scons
+compiler: gcc
+script: make
