@@ -15,7 +15,7 @@ mqtt_message_cb(struct mosquitto *mq_, void *obj,
 }
 
 void
-_initInput(void)
+mqtt_init(void)
 {
     mosquitto_lib_init();
     mq = mosquitto_new(NULL, true, NULL);
@@ -25,7 +25,9 @@ _initInput(void)
 }
 
 uint32_t
-_getInput(void)
+mqtt_loop(void)
 {
     mosquitto_loop(mq, -1, 1);
 }
+
+addInput(mqtt_init, mqtt_loop);

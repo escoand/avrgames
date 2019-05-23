@@ -17,12 +17,12 @@ uint32_t        keyMapping[] = { DEVICE_KEY_MAPPING };
 
 
 void
-initInput(void)
+device_init(void)
 {
 }
 
 uint32_t
-getInput(void)
+device_getkey(void)
 {
     static int      fd = 0;
     uint8_t         max = sizeof(keyMapping) / sizeof(uint32_t);
@@ -82,3 +82,5 @@ getInput(void)
 
     return button;
 }
+
+addInput(device_init, device_getkey);

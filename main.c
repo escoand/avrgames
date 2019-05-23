@@ -21,7 +21,8 @@ main(void)
     CLKPR = 0;
 #endif
 
-    initInput();
+    for(uint8_t i = 0; i < inputs.length; i++)
+        (*inputs.init[i]) ();
     initOutput();
 
     // init device
@@ -31,7 +32,8 @@ main(void)
 
     // default sceen
     while (1) {
-	button = getInput();
+        for(uint8_t i = 0; i < inputs.length; i++)
+            button |= (*inputs.read[i]) ();
 
 	if (button & BUTTON_MENU) {
 	    menu_main();

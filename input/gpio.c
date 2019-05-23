@@ -4,12 +4,12 @@
 #include "gpio.h"
 
 void
-initInput(void)
+gpio_init(void)
 {
 }
 
 uint32_t
-getInput(void)
+gpio_getkey(void)
 {
     uint32_t        button = BUTTON_NONE;
 
@@ -27,3 +27,5 @@ getInput(void)
 
     return button;
 }
+
+addInput(gpio_init, gpio_getkey);

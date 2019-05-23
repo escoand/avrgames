@@ -1,7 +1,9 @@
-TARGET   = ledmatrix
+TARGET   = avrgames
 SRC      = main.c \
            input/device.c \
+           input/gpio.c \
            input/mqtt.c \
+           input/terminal.c \
            output/gpio.c \
            games/loading.c \
            games/menu.c \
@@ -17,16 +19,15 @@ LDFLAGS  = -Lrpi_ws281x -lws2811 \
            -lmosquitto
 
 # terminal
-TERMSRC := $(filter-out $(wildcard */gpio.c */device.c),$(SRC)) \
-           output/terminal.c \
-           input/terminal.c
+TERMSRC := $(filter-out $(wildcard output/*.c),$(SRC)) \
+           output/terminal.c
 TERMOBJ  = $(TERMSRC:.c=.o)
 TERMLDF  = -lmosquitto
 
 # clear
 CLRSRC   = clear.c \
-	   output/gpio.c \
-	   log/src/log.c
+           output/gpio.c \
+           log/src/log.c
 CLROBJ   = $(CLRSRC:.c=.o)
 
 CC       = gcc

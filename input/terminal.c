@@ -12,7 +12,7 @@
 #include "input.h"
 
 void
-initInput(void)
+terinal_init(void)
 {
 #if _WIN32
     DWORD           mode;
@@ -31,7 +31,7 @@ initInput(void)
 }
 
 uint32_t
-getInput(void)
+terminal_getkey(void)
 {
     uint8_t         button = 0;
     uint8_t         buf[128];
@@ -66,3 +66,5 @@ getInput(void)
 
     return BUTTON_NONE;
 }
+
+addInput(terminal_init, terminal_getkey);
