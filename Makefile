@@ -22,14 +22,9 @@ LDFLAGS   = -Lmosquitto/lib -lmosquitto -pthread \
 # target specific
 DEFLOBJ   = output/terminal.o
 GPIOOBJ   = output/gpio.o
-CLROBJ    = clear.0 \
-            output/gpio.0 \
-            log/src/log.0
-WS281xOBJ = rpi_ws281x/dma.o \
-            rpi_ws281x/pcm.o \
-            rpi_ws281x/pwm.o \
-            rpi_ws281x/rpihw.o \
-            rpi_ws281x/ws2811.o
+CLROBJ    = clear.o \
+            output/gpio.o \
+            log/src/log.o
 
 RM        = rm -f
 INSTALL   = install -o root
@@ -65,10 +60,9 @@ uninstall:
 	$(RM) /usr/local/bin/$(TARGET) /etc/systemd/system/$(TARGET).service
 
 # libs
-libs: ws281x
+libs:
 	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no
-ws281x: $(WS281xOBJ)
-	${CROSS_COMPILE}$(CC) -o $@ $^
+	scons -C rpi_ws281x TOOLCHAIN=${CROSS_COMPILE:-=}
 
 # clean
 clean:
