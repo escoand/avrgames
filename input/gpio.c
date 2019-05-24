@@ -1,30 +1,27 @@
-#include "device.h"
-#include "gpio.h"
 #include "input.h"
-#include "mqtt.h"
-#include "terminal.h"
-
-struct inputModules inputs;
+#include "gpio.h"
 
 void
-initInputs(void) {
-    inputs.length = 0;
-    inputs.init[inputs.length] = device_init;
-    inputs.read[inputs.length++] = device_getkey;
-    inputs.init[inputs.length] = gpio_init;
-    inputs.read[inputs.length++] = device_getkey;
-    inputs.init[inputs.length] = mqtt_init;
-    inputs.read[inputs.length++] = mqtt_loop;
-    inputs.init[inputs.length] = terminal_init;
-    inputs.read[inputs.length++] = terminal_getkey;
+gpio_init(void)
+{
 }
 
 uint32_t
-getInputs(void) {
-    uint32_t button = BUTTON_NONE;
+gpio_getkey(void)
+{
+    uint32_t        button = BUTTON_NONE;
 
-    for(uint8_t i = 0; i < inputs.length; i++)
-	button |= (*inputs.read[i]) ();
+#ifdef __AVR__
+    if (bit_is_clear(PINREG_LEFT, PINBIT_LEFT))
+	button = button | BUTTON_LEFT;
+    else if (bit_is_clear(PINREG_RIGHT, PINBIT_RIGHT))
+	button = button | BUTTON_RIGHT;
+    else if (bit_is_clear(PINREG_UP, PINBIT_UP))
+	button = button | BUTTON_UP;
+    else if (bit_is_clear(PINREG_DOWN, PINBIT_DOWN))
+	button = button | BUTTON_DOWN;
+#else
+#endif
 
     return button;
 }

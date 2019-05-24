@@ -1,6 +1,8 @@
 #ifndef INPUT_GPIO_H_
 #define INPUT_GPIO_H_
 
+#include <stdint.h>
+
 #ifdef __AVR__
 
 #define PORT_STRIPE          B

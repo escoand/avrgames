@@ -1,6 +1,7 @@
 #ifndef INPUT_DEVICE_H_
 #define INPUT_DEVICE_H_
 
+#include <stdint.h>
 #include <linux/input.h>
 
 #define DEVICE_DIR          "/dev/input"
