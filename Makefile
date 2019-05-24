@@ -17,7 +17,7 @@ CFLAGS   = -Wall -ggdb -O2 \
            -Ilog/src -DLOG_USE_COLOR -g \
            -Imosquitto/lib \
            -Irpi_ws281x
-LDFLAGS  = -Lmosquitto/lib -lmosquitto -pthread -lssl \
+LDFLAGS  = -Lmosquitto/lib -lmosquitto -pthread \
            -Lrpi_ws281x -lws2811
 
 # terminal
@@ -68,7 +68,7 @@ uninstall:
 
 # libs
 libs:
-	make -C mosquitto/lib libmosquitto.a
+	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no
 	scons -C rpi_ws281x
 
 # clean
@@ -76,8 +76,8 @@ clean:
 	$(RM) *.[ch]~ */*.[ch]~ *.o */*.o $(TARGET) clear
 
 clean-libs:
-	scons -C rpi_ws281x --clean
 	make -C mosquitto/lib clean
+	scons -C rpi_ws281x --clean
 
 # helper
 indent:
