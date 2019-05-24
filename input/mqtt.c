@@ -9,7 +9,7 @@ static struct mosquitto *mq;
 
 void
 mqtt_message_cb(struct mosquitto *mq_, void *obj,
-		struct mosquitto_message *msg)
+		const struct mosquitto_message *msg)
 {
     log_debug("topic:%s payload:%s", msg->topic, msg->payload);
 }
