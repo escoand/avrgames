@@ -1,6 +1,9 @@
-[submodule "rpi_ws281x"]
-	path = rpi_ws281x
-	url = https://github.com/jgarff/rpi_ws281x.git
 [submodule "log"]
 	path = log
 	url = https://github.com/rxi/log.c.git
+[submodule "rpi_ws281x"]
+	path = rpi_ws281x
+	url = https://github.com/jgarff/rpi_ws281x.git
+[submodule "mosquitto"]
+	path = mosquitto
+	url = https://github.com/eclipse/mosquitto.git
