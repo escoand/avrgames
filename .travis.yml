@@ -2,14 +2,14 @@ dist: xenial
 language: c
 
 env:
-  - CROSS_COMPILE= \
-    DEPS=
-  - CROSS_COMPILE=arm-linux-gnueabihf- \
+  - 
+  - CROSS_PREFIX=arm-linux-gnueabihf- \
     DEPS=crossbuild-essential-armhf
-  - CROSS_COMPILE=avr- \
+  - CROSS_PREFIX=avr- \
     DEPS="gcc-avr avr-libc"
-  #- CROSS_COMPILE=x86_64-w64-mingw32-gcc-win32 \
-  #  DEPS="gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev"
+  - CROSS_PREFIX=x86_64-w64-mingw32- \
+    CROSS_SUFFIX=-win32 \
+    DEPS="gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev"
 
 before_install:
   - sudo apt-get update
