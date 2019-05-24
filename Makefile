@@ -74,7 +74,7 @@ clean:
 	$(RM) *.[ch]~ */*.[ch]~ *.o */*.o $(TARGET) clear
 
 clean-libs:
-	#scons -C rpi_ws281x --clean
+	scons -C rpi_ws281x --clean
 	make -C mosquitto/lib clean
 
 # helper

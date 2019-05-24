@@ -1,4 +1,4 @@
 language: c
-install: make scons
+install: make scons libmosquitto-dev
 compiler: gcc
 script: make
