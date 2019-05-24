@@ -30,8 +30,8 @@ RM        = rm -f
 INSTALL   = install -o root
 
 # override variables
-CC       := $(CC)$(CROSS_SUFFIX)
-AR       := $(AR)$(CROSS_SUFFIX)
+CC       := $(CROSS_PREFIX)$(CC)$(CROSS_SUFFIX)
+AR       := $(CROSS_PREFIX)$(AR)$(CROSS_SUFFIX)
 
 .PHONY:  indent libs install uninstall clean clean-libs
 
@@ -44,13 +44,13 @@ all: $(TARGET) gpio clear
 
 # targets
 $(TARGET): libs $(OBJ) $(DEFLOBJ)
-	$(CROSS_PREFIX)$(CC) -o $@ $(OBJ) $(DEFLOBJ) $(LDFLAGS)
+	$(CC) -o $@ $(OBJ) $(DEFLOBJ) $(LDFLAGS)
 
 gpio: libs $(OBJ) $(GPIOOBJ)
-	$(CROSS_PREFIX)$(CC) -o $@ $(OBJ) $(GPIOOBJ) $(LDFLAGS)
+	$(CC) -o $@ $(OBJ) $(GPIOOBJ) $(LDFLAGS)
 
 clear: libs $(CLROBJ)
-	$(CROSS_PREFIX)$(CC) -o $@ $(CLROBJ) $(LDFLAGS)
+	$(CC) -o $@ $(CLROBJ) $(LDFLAGS)
 
 # install
 install: $(TARGET)
@@ -65,7 +65,7 @@ uninstall:
 
 # libs
 libs:
-	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no CROSS_COMPILE=$(CROSS_PREFIX) CC=$(CC) AR=$(AR)
+	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no CC=$(CC) AR=$(AR)
 	scons -C rpi_ws281x TOOLCHAIN=$(CROSS_PREFIX:-=) CC=$(CC) AR=$(AR)
 
 # clean
