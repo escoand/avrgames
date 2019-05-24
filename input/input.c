@@ -13,8 +13,10 @@ initInputs(void) {
     inputs.read[inputs.length++] = device_getkey;
     inputs.init[inputs.length] = gpio_init;
     inputs.read[inputs.length++] = device_getkey;
+#ifndef __AVR__
     inputs.init[inputs.length] = mqtt_init;
     inputs.read[inputs.length++] = mqtt_loop;
+#endif
     inputs.init[inputs.length] = terminal_init;
     inputs.read[inputs.length++] = terminal_getkey;
 }

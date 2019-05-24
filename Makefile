@@ -65,7 +65,7 @@ uninstall:
 
 # libs
 libs:
-	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no CC=$(CC) AR=$(AR)
+	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no WITH_THREADING=no CC=$(CC) AR=$(AR)
 	scons -C rpi_ws281x TOOLCHAIN=$(CROSS_PREFIX:-=) CC=$(CC) AR=$(AR)
 
 # clean
