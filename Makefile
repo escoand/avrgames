@@ -12,7 +12,7 @@ SRC       = main.c \
             games/fire.c \
             log/src/log.c
 OBJ       = $(SRC:.c=.o)
-CFLAGS    = -Wall -ggdb -O2 \
+CFLAGS    = -Wall -ggdb -O2 -DBUILDING_DLL \
             -Ilog/src -DLOG_USE_COLOR -g \
             -Imosquitto/lib \
             -Irpi_ws281x
@@ -65,7 +65,7 @@ uninstall:
 
 # libs
 libs:
-	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no WITH_THREADING=no BUILDING_DLL=1 CC=$(CC) AR=$(AR)
+	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no WITH_THREADING=no CC=$(CC) AR=$(AR)
 	scons -C rpi_ws281x TOOLCHAIN=$(CROSS_PREFIX:-=) CC=$(CC) AR=$(AR)
 
 # clean
