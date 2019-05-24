@@ -1,19 +1,14 @@
 dist: xenial
 language: c
 
-compiler:
-  #- arm-linux-gnueabihf-gcc
-  #- avr-gcc
-  #- clang
-  - gcc
-  #- x86_64-w64-mingw32-gcc-win32
-
 env:
-  - CROSS_COMPILE=arm-linux-gnueabihf-
-  - CROSS_COMPILE=avr-
+  - CROSS_COMPILE=                    
+  - CROSS_COMPILE=arm-linux-gnueabihf-          DEPS="gcc-arm-linux-gnueabihf libc6-dev-armhf-cross"
+  - CROSS_COMPILE=avr-                          DEPS="gcc-avr avr-libc"
+  #- CROSS_COMPILE=x86_64-w64-mingw32-gcc-win32  DEPS="gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev"
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y make scons gcc-arm-linux-gnueabihf gcc-avr gcc-mingw-w64-x86-64
+  - sudo apt-get install -y make scons $DEPS
 
 script: make
