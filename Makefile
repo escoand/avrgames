@@ -14,10 +14,11 @@ SRC      = main.c \
            log/src/log.c
 OBJ      = $(SRC:.c=.o)
 CFLAGS   = -Wall -ggdb -O2 \
-           -Irpi_ws281x \
-           -Ilog/src -DLOG_USE_COLOR -g
-LDFLAGS  = -Lrpi_ws281x -lws2811 \
-           -lmosquitto
+           -Ilog/src -DLOG_USE_COLOR -g \
+           -Imosquitto/lib \
+           -Irpi_ws281x
+LDFLAGS  = -Lmosquitto/lib -lmosquitto \
+           -Lrpi_ws281x -lws2811
 
 # terminal
 TERMSRC := $(filter-out $(wildcard output/*.c),$(SRC)) \
@@ -67,8 +68,8 @@ uninstall:
 
 # libs
 libs:
-	scons -C rpi_ws281x
 	make -C mosquitto/lib libmosquitto.a
+	scons -C rpi_ws281x
 
 # clean
 clean:
@@ -81,4 +82,3 @@ clean-libs:
 # helper
 indent:
 	indent -orig *.c input/*.c input/*.h output/*.c output/*.h games/*.c games/*.h
-
