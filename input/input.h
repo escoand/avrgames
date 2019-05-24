@@ -1,6 +1,7 @@
 #ifndef INPUT_H_
 #define INPUT_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 enum inputButton {
