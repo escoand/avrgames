@@ -42,17 +42,17 @@ all: $(TARGET) clear
 
 # source
 %.o : %.c
-	$(CC) $(CFLAGS) -o $@ -c $<
+	${CROSS_COMPILE}$(CC) $(CFLAGS) -o $@ -c $<
 
 # targets
 $(TARGET): libs $(OBJ)
-	$(CC) -o $@ $(OBJ) $(LDFLAGS)
+	${CROSS_COMPILE}$(CC) -o $@ $(OBJ) $(LDFLAGS)
 
 terminal: $(TERMOBJ)
-	$(CC) -o $(TARGET) $^ $(TERMLDF)
+	${CROSS_COMPILE}$(CC) -o $(TARGET) $^ $(TERMLDF)
 
 clear: libs $(CLROBJ)
-	$(CC) -o $@ $(CLROBJ) $(LDFLAGS)
+	${CROSS_COMPILE}$(CC) -o $@ $(CLROBJ) $(LDFLAGS)
 
 # install
 install: $(TARGET)

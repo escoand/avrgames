@@ -2,11 +2,15 @@ dist: xenial
 language: c
 
 compiler:
-  - arm-linux-gnueabihf-gcc
-  - avr-gcc
-  - clang
+  #- arm-linux-gnueabihf-gcc
+  #- avr-gcc
+  #- clang
   - gcc
-  - x86_64-w64-mingw32-gcc-win32
+  #- x86_64-w64-mingw32-gcc-win32
+
+env:
+  - CROSS_COMPILE=arm-linux-gnueabihf-
+  - CROSS_COMPILE=avr-
 
 before_install:
   - sudo apt-get update
