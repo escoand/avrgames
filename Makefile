@@ -53,7 +53,7 @@ terminal: $(TERMOBJ)
 	$(CC) -o $(TARGET) $^ $(TERMLDF)
 
 clear: libs $(CLROBJ)
-	$(CC) -o $@ $^ $(LDFLAGS)
+	$(CC) -o $@ $(CLROBJ) $(LDFLAGS)
 
 # install
 install: $(TARGET)
