@@ -1,11 +1,13 @@
 dist: xenial
 language: c
-compiler:
-  - gcc
-  - clang
+
+env:
+  - CC=gcc
+  - CC=clang
+  - CC=x86_64-w64-mingw32-gcc-win32
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -y make scons
+  - sudo apt-get install -y make scons gcc-mingw-w64-x86-64
 
 script: make
