@@ -31,7 +31,7 @@ INSTALL   = install -o root
 
 # override variables
 CC       := $(CC)$(CROSS_SUFFIX)
-AR       := $(CC)$(CROSS_SUFFIX)
+AR       := $(AR)$(CROSS_SUFFIX)
 
 .PHONY:  indent libs install uninstall clean clean-libs
 
