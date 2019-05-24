@@ -25,17 +25,16 @@ GPIOOBJ   = output/gpio.o
 CLROBJ    = clear.0 \
             output/gpio.0 \
             log/src/log.0
-WS281xOBJ = rpi_ws281x/ws2811.o \
-            rpi_ws281x/pwm.o \
+WS281xOBJ = rpi_ws281x/dma.o \
             rpi_ws281x/pcm.o \
-            rpi_ws281x/dma.o \
-            rpi_ws281x/rpihw.o
+            rpi_ws281x/pwm.o \
+            rpi_ws281x/rpihw.o \
+            rpi_ws281x/ws2811.o
 
 RM        = rm -f
 INSTALL   = install -o root
 
 .PHONY:  indent libs install uninstall clean clean-libs
-.IGNORE: gpio ws281x
 
 # default target
 all: $(TARGET) gpio clear
@@ -69,7 +68,7 @@ uninstall:
 libs: ws281x
 	make -C mosquitto/lib libmosquitto.a WITH_TLS=no WITH_TLS_PSK=no
 ws281x: $(WS281xOBJ)
-	${CROSS_COMPILE}$(CC) -o $@ $^ $(LDFLAGS)
+	${CROSS_COMPILE}$(CC) -o $@ $^
 
 # clean
 clean:
