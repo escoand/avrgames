@@ -32,7 +32,6 @@ CLRSRC   = clear.c \
            log/src/log.c
 CLROBJ   = $(CLRSRC:.c=.o)
 
-CC       = gcc
 RM       = rm -f
 INSTALL  = install -o root
 
