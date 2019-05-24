@@ -12,7 +12,7 @@
 #include "terminal.h"
 
 void
-terinal_init(void)
+terminal_init(void)
 {
 #if _WIN32
     DWORD           mode;
