@@ -237,7 +237,7 @@ nextStep(void)
      * move brick 
      */
     else {
-	uint8_t         button = getInput();
+	uint8_t         button = getInputs();
 
 	insertBrick(offset_x, offset_y, ACTION_REVERSE);
 	offset_y++;

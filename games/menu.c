@@ -57,7 +57,7 @@ menu_main(void)
     setRawOutput(&menu);
 
     while (slept <= MENU_TIMEOUT_MS) {
-	button = getInput();
+	button = getInputs();
 
 	if (button & BUTTON_UP) {
 	    clock_main();

@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <log.h>
 
@@ -146,9 +147,6 @@ setRawOutputUsePalette(board_matrix * board, enum BOARD_PALETTE palette)
 void
 clearOutput(void)
 {
-    ws2811_return_t ret;
-
     memset(ledstring.channel[0].leds, 0, ledstring.channel[0].count);
-
     renderOutput();
 }

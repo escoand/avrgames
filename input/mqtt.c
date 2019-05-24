@@ -28,4 +28,6 @@ uint32_t
 mqtt_loop(void)
 {
     mosquitto_loop(mq, -1, 1);
+
+    return BUTTON_NONE;
 }

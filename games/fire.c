@@ -16,9 +16,9 @@ fire_main(void)
 
     // clear input
     ms_sleep(FIRE_TICK_MS);
-    getInput();
+    getInputs();
 
-    while (getInput() == BUTTON_NONE) {
+    while (getInputs() == BUTTON_NONE) {
 	for (x = 0; x < BOARD_WIDTH; x++) {
 
 	    // cool down

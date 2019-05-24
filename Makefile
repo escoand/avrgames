@@ -17,7 +17,7 @@ CFLAGS   = -Wall -ggdb -O2 \
            -Ilog/src -DLOG_USE_COLOR -g \
            -Imosquitto/lib \
            -Irpi_ws281x
-LDFLAGS  = -Lmosquitto/lib -lmosquitto \
+LDFLAGS  = -Lmosquitto/lib -lmosquitto -pthread -lssl \
            -Lrpi_ws281x -lws2811
 
 # terminal
