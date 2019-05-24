@@ -22,4 +22,7 @@
                             BTN_THUMB2,  BUTTON_DOWN, \
 			    BTN_BASE3,   BUTTON_MENU
 
+void device_init(void);
+uint32_t device_getkey(void);
+
 #endif				/* INPUT_DEVICE_H_ */

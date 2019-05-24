@@ -10,6 +10,7 @@
 #endif
 
 #include "input.h"
+#include "terminal.h"
 
 void
 terinal_init(void)
@@ -66,5 +67,3 @@ terminal_getkey(void)
 
     return BUTTON_NONE;
 }
-
-addInput(terminal_init, terminal_getkey);

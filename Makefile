@@ -2,6 +2,7 @@ TARGET   = avrgames
 SRC      = main.c \
            input/device.c \
            input/gpio.c \
+           input/input.c \
            input/mqtt.c \
            input/terminal.c \
            output/gpio.c \

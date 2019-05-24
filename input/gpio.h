@@ -49,4 +49,7 @@
 #else
 #endif
 
+void gpio_init(void);
+uint32_t gpio_getkey(void);
+
 #endif				/* INPUT_GPIO_H_ */

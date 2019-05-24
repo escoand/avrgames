@@ -82,5 +82,3 @@ device_getkey(void)
 
     return button;
 }
-
-addInput(device_init, device_getkey);

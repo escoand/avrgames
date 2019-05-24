@@ -29,5 +29,3 @@ mqtt_loop(void)
 {
     mosquitto_loop(mq, -1, 1);
 }
-
-addInput(mqtt_init, mqtt_loop);
