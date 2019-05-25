@@ -7,9 +7,9 @@ env:
     DEPS=crossbuild-essential-armhf
   #- CROSS_PREFIX=avr- \
   #  DEPS="gcc-avr avr-libc"
-  - CROSS_PREFIX=x86_64-w64-mingw32- \
-    CROSS_SUFFIX=-win32 \
-    DEPS="gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev"
+  #- CROSS_PREFIX=x86_64-w64-mingw32- \
+  #  CROSS_SUFFIX=-win32 \
+  #  DEPS="gcc-mingw-w64-x86-64 mingw-w64-x86-64-dev"
 
 before_install:
   - sudo apt-get update
